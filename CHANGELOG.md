@@ -5,6 +5,11 @@ All notable changes to BABOK Analyst project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.6] - 2026-06-24
+
+### Changed
+- **BABOK_Agent_LLM_Prompt.md:** Rewritten for v2.2.6 — 9-stage pipeline (Stage 0 gate), 16 MCP tools, plugin marketplace, slash commands with PL/ENG, CLI highlights, Short Rationale + Evidence, and current project storage model.
+
 ## [2.2.5] - 2026-06-24
 
 ### Added
