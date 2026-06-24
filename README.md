@@ -66,7 +66,7 @@ BABOK_ANALYST/
 |
 |-- babok-mcp/                            # MCP Server (v2.0)
 |   |-- bin/babok-mcp.js                  # Entry point (npx babok-mcp)
-|   |-- src/server.js                     # MCP server — 10 tools + 9 resources
+|   |-- src/server.js                     # MCP server — 16 tools + 9 resources
 |   |-- src/lib/project.js                # Project ID & path resolution
 |   |-- src/lib/journal.js                # Journal CRUD + stage transitions
 |   |-- src/test/smoke.js                 # 10-assertion smoke test suite
@@ -90,6 +90,7 @@ BABOK_ANALYST/
 |   |-- MCP_TOOLS_SPECIFICATION.md        # Full MCP tools API reference
 |   |-- MIGRATION_GUIDE_L1_to_L2.md       # CLI → MCP migration guide
 |   |-- workflows.md                      # End-to-end workflow diagrams
+|   |-- agent-portability.md              # Plugin marketplace adapter matrix (NEW v2.1.0)
 |
 |-- templates/                            # BABOK deliverable templates (NEW v2.1.0)
 |   |-- BRD_Template.md                   # Business Requirements Document
@@ -107,13 +108,27 @@ BABOK_ANALYST/
 |   |-- schema/
 |   |-- README.md
 |
-|-- tests/                                # Automated test suite — 73 tests (NEW v2.1.0)
+|-- tests/                                # Automated test suite (NEW v2.1.0)
 |   |-- unit/                             # Unit tests (project, journal, scoring, validation)
 |   |-- integration/                      # Integration tests (CLI workflow)
+|   |-- plugin-manifest.test.cjs          # Plugin marketplace smoke tests (NEW v2.1.0)
+|   |-- hooks.test.cjs                    # Lifecycle hook tests (NEW v2.1.0)
+|   |-- uninstall.test.cjs                # Uninstall script tests (NEW v2.1.0)
 |   |-- fixtures/                         # Sample deliverable files for testing
 |   |-- helpers/                          # mock-llm.js, temp-project.js
 |
 |-- evaluation/                           # Gold standard evaluation suite (NEW v2.1.0)
+|
+|-- .claude-plugin/                       # Claude Code marketplace manifests (NEW v2.1.0)
+|-- .codex-plugin/                        # Codex plugin manifest
+|-- .github/plugin/                       # Copilot CLI plugin manifest
+|-- .mcp.json                             # Portable MCP wiring (${CLAUDE_PLUGIN_ROOT})
+|-- hooks/                                # Lifecycle hooks (Claude/Codex/Copilot)
+|-- skills/                               # Bundled agent skills
+|-- commands/                             # Slash commands (/babok-new, etc.)
+|-- agents/                               # Subagent definitions (orchestrator, stages)
+|-- AGENTS.md                             # Always-on rules for generic agents
+|-- scripts/                              # check-versions.cjs, uninstall.cjs
 |
 |-- setup.bat                             # One-click installer (Windows)
 |-- setup.sh                              # One-click installer (Linux/macOS)
@@ -179,6 +194,39 @@ Each stage file contains: step-by-step process, questions for human, deliverable
 ---
 
 ## How to Get Started
+
+### Plugin Marketplace Install (recommended) — NEW in v2.1.0
+
+One-command install across Claude Code, Codex, and Copilot CLI:
+
+**Claude Code:**
+```
+/plugin marketplace add GSkuza/babok_analyst
+/plugin install babok_analyst@babok_analyst
+/reload-plugins
+```
+
+**Codex:**
+```
+codex plugin marketplace add GSkuza/babok_analyst
+```
+Then open `/plugins`, select the babok_analyst marketplace, install, and authorize hooks in `/hooks`.
+
+**GitHub Copilot CLI:**
+```
+copilot plugin marketplace add GSkuza/babok_analyst
+copilot plugin install babok_analyst@babok_analyst
+```
+
+The plugin bundles skills, agents, slash commands (`/babok-new`, `/babok-status`, `/babok-help`),
+lifecycle hooks, and portable MCP wiring via `.mcp.json`. Projects are stored in
+`projects/<project_id>/` under your workspace.
+
+**Uninstall external state:** `node scripts/uninstall.cjs`
+
+See [`docs/agent-portability.md`](docs/agent-portability.md) for the full adapter matrix.
+
+---
 
 ### Quick Start (non-technical users) — NEW in v2.0.1
 
@@ -528,9 +576,14 @@ When multiple analysts work on the **same project directory** (e.g. on a shared 
 
 > **The biggest differentiator.** Claude and other MCP-compatible AI assistants can now manage your BABOK project lifecycle _without leaving the chat interface_.
 
-The `babok-mcp` package is a [Model Context Protocol](https://modelcontextprotocol.io) server that exposes **10 tools** and 9 resources to any compatible AI client.
+The `babok-mcp` package is a [Model Context Protocol](https://modelcontextprotocol.io) server that exposes **16 tools** and 9 resources to any compatible AI client.
 
-### Setup (Claude Desktop / Claude Code)
+### Setup (Plugin install — recommended)
+
+If you installed via the plugin marketplace (see above), MCP is wired automatically
+via `.mcp.json` with `${CLAUDE_PLUGIN_ROOT}` paths. Run `/reload-plugins` after install.
+
+### Setup (Claude Desktop / manual Claude Code)
 
 **Windows (one-click):**
 ```bat
@@ -575,8 +628,14 @@ Restart Claude Desktop — a 🔧 tool icon confirms the server is connected.
 | `babok_save_deliverable` | Persist AI-generated content to project dir |
 | `babok_search` | Full-text search across all project files |
 | `babok_export` | Copy all deliverables to an export directory |
-| `babok_rename_project` | **Rename a project** (NEW v2.0.1) |
-| `babok_delete_project` | **Delete a project** with explicit confirmation (NEW v2.0.1) |
+| `babok_rename_project` | Rename a project |
+| `babok_delete_project` | Delete a project with explicit confirmation |
+| `babok_get_stage_artifact` | Read stage artefact file |
+| `babok_quality_check` | Score deliverable quality |
+| `babok_sync_stage_artifact` | Sync artefact to project |
+| `babok_create_jira_epic` | Create Jira epic from roadmap |
+| `babok_create_github_issues` | Create GitHub issues from roadmap |
+| `babok_read_external_context` | Read external context files |
 
 ### Example flow in Claude
 
@@ -820,10 +879,14 @@ I DON'T KNOW - I need to check with [person/department]
 
 ## Output Files
 
-Each project gets its own directory identified by a unique **Project ID** (e.g., `BABOK-20260208-M3R1`). The agent generates Markdown documents for each stage plus a persistent journal log:
+Each project gets its own directory identified by a unique **Project ID** (e.g., `BABOK-20260208-M3R1`). The agent generates Markdown documents for each stage plus a persistent journal log.
+
+**Canonical storage (MCP, CLI, plugin):** `projects/<project_id>/`
+
+**Legacy CLI export default:** `BABOK_Analysis/` — only when using `babok run -o BABOK_Analysis`
 
 ```
-BABOK_Analysis/
+projects/
 └── BABOK-20260208-M3R1/                    # Project directory (unique per project)
     ├── PROJECT_JOURNAL_BABOK-20260208-M3R1.json  # State tracking journal
     ├── STAGE_00_Project_Charter.md
@@ -834,8 +897,7 @@ BABOK_Analysis/
     ├── STAGE_05_Future_State_Design.md
     ├── STAGE_06_Gap_Analysis_Roadmap.md
     ├── STAGE_07_Risk_Assessment.md
-    ├── STAGE_08_Business_Case_ROI.md
-    └── FINAL_Complete_Documentation.md
+    └── STAGE_08_Business_Case_ROI.md
 ```
 
 The **Project Journal** (`PROJECT_JOURNAL_*.json`) tracks all stage transitions, approvals, decisions, and assumptions — enabling exact state restoration with `LOAD PROJECT`.

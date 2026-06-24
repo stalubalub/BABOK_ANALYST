@@ -1,10 +1,23 @@
 {
   "name": "babok-analyst",
-  "version": "2.1.1",
-  "description": "BABOK Analyst — root workspace",
+  "version": "2.1.0",
+  "description": "BABOK Analyst — root workspace and plugin marketplace distribution",
   "private": true,
   "type": "module",
+  "author": {
+    "name": "Grzegorz Skuza",
+    "url": "https://github.com/GSkuza"
+  },
+  "homepage": "https://github.com/GSkuza/babok_analyst",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GSkuza/babok_analyst.git"
+  },
+  "license": "MIT",
+  "keywords": ["babok", "business-analysis", "claude-plugin", "mcp"],
   "scripts": {
-    "test": "node --test tests/unit/project.test.js tests/unit/journal.test.js tests/unit/scoring.test.js tests/unit/validation.test.js tests/integration/cli-workflow.test.js"
+    "test": "node --test tests/unit/project.test.js tests/unit/journal.test.js tests/unit/scoring.test.js tests/unit/validation.test.js tests/integration/cli-workflow.test.js tests/plugin-manifest.test.cjs tests/hooks.test.cjs tests/uninstall.test.cjs",
+    "test:plugin": "node --test tests/plugin-manifest.test.cjs tests/hooks.test.cjs tests/uninstall.test.cjs",
+    "check-versions": "node scripts/check-versions.cjs"
   }
 }

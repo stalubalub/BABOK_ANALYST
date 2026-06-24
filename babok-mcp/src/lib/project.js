@@ -45,18 +45,49 @@ export const STAGE_PROMPT_FILE_NAMES = {
 };
 
 /**
+ * Resolve the plugin install root when running as a Claude/Codex/Copilot plugin.
+ * @returns {string|null}
+ */
+function getPluginRoot() {
+  const candidates = [
+    process.env.BABOK_PLUGIN_ROOT,
+    process.env.CLAUDE_PLUGIN_ROOT,
+    process.env.PLUGIN_ROOT,
+    process.env.CODEX_PLUGIN_ROOT,
+    process.env.COPILOT_PLUGIN_ROOT,
+  ];
+  for (const candidate of candidates) {
+    if (candidate && fs.existsSync(candidate)) {
+      return path.resolve(candidate);
+    }
+  }
+  return null;
+}
+
+/**
  * Resolve the projects directory.
  * Priority:
  *   1. BABOK_PROJECTS_DIR env var
- *   2. ./projects relative to CWD
- *   3. ../projects relative to this package (when installed inside BABOK_ANALYST/babok-mcp)
+ *   2. CLAUDE_PROJECT_DIR/projects (plugin workspace)
+ *   3. ./projects relative to CWD
+ *   4. <plugin-root>/projects (when installed as marketplace plugin)
+ *   5. ../projects relative to this package (dev checkout)
  */
 export function getProjectsDir() {
   if (process.env.BABOK_PROJECTS_DIR) {
     return path.resolve(process.env.BABOK_PROJECTS_DIR);
   }
+  if (process.env.CLAUDE_PROJECT_DIR) {
+    return path.join(path.resolve(process.env.CLAUDE_PROJECT_DIR), 'projects');
+  }
   const cwdProjects = path.join(process.cwd(), 'projects');
   if (fs.existsSync(cwdProjects)) return cwdProjects;
+
+  const pluginRoot = getPluginRoot();
+  if (pluginRoot) {
+    const pluginProjects = path.join(pluginRoot, 'projects');
+    return pluginProjects;
+  }
 
   const relProjects = path.join(__dirname, '..', '..', 'projects');
   if (fs.existsSync(relProjects)) return relProjects;
@@ -68,12 +99,18 @@ export function getProjectsDir() {
  * Resolve the BABOK_AGENT/stages directory for stage prompt files.
  * Priority:
  *   1. BABOK_AGENT_DIR env var
- *   2. ./BABOK_AGENT/stages relative to CWD
- *   3. ../BABOK_AGENT/stages relative to this package
+ *   2. <plugin-root>/BABOK_AGENT/stages (marketplace plugin install)
+ *   3. ./BABOK_AGENT/stages relative to CWD
+ *   4. ../BABOK_AGENT/stages relative to this package
  */
 export function getAgentStagesDir() {
   if (process.env.BABOK_AGENT_DIR) {
     return path.resolve(process.env.BABOK_AGENT_DIR);
+  }
+  const pluginRoot = getPluginRoot();
+  if (pluginRoot) {
+    const pluginStages = path.join(pluginRoot, 'BABOK_AGENT', 'stages');
+    if (fs.existsSync(pluginStages)) return pluginStages;
   }
   const cwdStages = path.join(process.cwd(), 'BABOK_AGENT', 'stages');
   if (fs.existsSync(cwdStages)) return cwdStages;

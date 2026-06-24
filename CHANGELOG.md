@@ -27,6 +27,19 @@ babok run --orchestrate --provider openai --model gpt-4o-mini --deep-model o3
 
 ### Added
 
+#### 🔌 Plugin Marketplace Distribution — Claude / Codex / Copilot CLI
+- **Marketplace manifests:** `.claude-plugin/marketplace.json`, `.claude-plugin/plugin.json`, `.codex-plugin/plugin.json`, `.github/plugin/plugin.json`, `gemini-extension.json`.
+- **Portable MCP wiring:** `.mcp.json` with `${CLAUDE_PLUGIN_ROOT}` and `${CLAUDE_PROJECT_DIR}/projects`.
+- **Lifecycle hooks:** `hooks/babok-activate.cjs`, `claude-codex-hooks.json`, `copilot-hooks.json` — session activation + auto `npm install` for `babok-mcp`.
+- **Bundled skills:** `skills/babok-analyst/SKILL.md`.
+- **Slash commands:** `/babok-new`, `/babok-status`, `/babok-help` (`commands/*.toml`).
+- **Subagents:** `agents/` — orchestrator + stage agents (12 definitions).
+- **Always-on rules:** `AGENTS.md` for generic agents and Gemini CLI extension.
+- **Uninstall path:** `scripts/uninstall.cjs` cleans external plugin state.
+- **Version guard:** `scripts/check-versions.cjs` + `tests/plugin-manifest.test.cjs`, `tests/hooks.test.cjs`, `tests/uninstall.test.cjs`.
+- **Agent portability guide:** `docs/agent-portability.md`.
+- **Install commands documented** in README and CLAUDE.md for all three hosts.
+
 #### 🌐 Web UI (Next.js 15 App Router) — `web/`
 - New `web/` application with full **Next.js 15.5 App Router** setup.
 - **Dashboard** — lists all projects with stage progress bars.
@@ -107,6 +120,9 @@ babok run --orchestrate --provider openai --model gpt-4o-mini --deep-model o3
 
 ### Changed
 - **Version bump:** All packages synchronized to `2.1.0` (`cli`, `babok-mcp`, `web`, root workspace).
+- **MCP tool count:** Documentation aligned to **16 tools** (was incorrectly listed as 10).
+- **Project directory:** Canonical storage documented as `projects/`; `BABOK_Analysis/` marked as legacy CLI export only.
+- **`babok-mcp/src/lib/project.js`:** Portable path resolution for `CLAUDE_PLUGIN_ROOT`, `CLAUDE_PROJECT_DIR`, and plugin install layouts.
 - **`babok-mcp/` context migrated to v2.0:** Updated `agent_config` and stage configs to use new `context_schema_v2.json`.
 - **6 new L2 MCP tools** added to `babok-mcp/`: extending the MCP server API surface.
 

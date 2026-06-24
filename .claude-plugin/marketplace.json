@@ -1,0 +1,17 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "babok_analyst",
+  "description": "BABOK v3 business analysis agent — 9-stage pipeline with MCP project lifecycle tools.",
+  "owner": {
+    "name": "Grzegorz Skuza",
+    "url": "https://github.com/GSkuza"
+  },
+  "plugins": [
+    {
+      "name": "babok_analyst",
+      "description": "Structured BABOK analysis: charter gate, 8 deliverable stages, human approval gates, MCP tools.",
+      "source": "./",
+      "category": "productivity"
+    }
+  ]
+}

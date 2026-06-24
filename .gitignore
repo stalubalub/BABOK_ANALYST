@@ -23,6 +23,7 @@ export/
 
 # Node.js (CLI tool)
 cli/node_modules/
+babok-mcp/node_modules/
 
 # API keys and secrets - NEVER commit
 .env
