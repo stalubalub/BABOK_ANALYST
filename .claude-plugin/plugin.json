@@ -6,8 +6,8 @@
     "name": "Grzegorz Skuza",
     "url": "https://github.com/GSkuza"
   },
-  "homepage": "https://github.com/GSkuza/babok_analyst",
-  "repository": "https://github.com/GSkuza/babok_analyst",
+  "homepage": "https://github.com/GSkuza/BABOK_ANALYST",
+  "repository": "https://github.com/GSkuza/BABOK_ANALYST",
   "license": "MIT",
   "keywords": ["babok", "business-analysis", "requirements", "mcp", "productivity"],
   "commands": "./commands/",

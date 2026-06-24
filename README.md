@@ -201,20 +201,20 @@ One-command install across Claude Code, Codex, and Copilot CLI:
 
 **Claude Code:**
 ```
-/plugin marketplace add GSkuza/babok_analyst
+/plugin marketplace add GSkuza/BABOK_ANALYST
 /plugin install babok_analyst@babok_analyst
 /reload-plugins
 ```
 
 **Codex:**
 ```
-codex plugin marketplace add GSkuza/babok_analyst
+codex plugin marketplace add GSkuza/BABOK_ANALYST
 ```
 Then open `/plugins`, select the babok_analyst marketplace, install, and authorize hooks in `/hooks`.
 
 **GitHub Copilot CLI:**
 ```
-copilot plugin marketplace add GSkuza/babok_analyst
+copilot plugin marketplace add GSkuza/BABOK_ANALYST
 copilot plugin install babok_analyst@babok_analyst
 ```
 
@@ -225,6 +225,24 @@ lifecycle hooks, and portable MCP wiring via `.mcp.json`. Projects are stored in
 **Uninstall external state:** `node scripts/uninstall.cjs`
 
 See [`docs/agent-portability.md`](docs/agent-portability.md) for the full adapter matrix.
+
+**Troubleshooting: `marketplace "babok_analyst" not found`**
+
+You must add the marketplace **before** install. Run step 1, verify in `/plugin` → **Marketplaces** that `babok_analyst` appears, then run install.
+
+```
+/plugin marketplace add GSkuza/BABOK_ANALYST
+/plugin marketplace update babok_analyst
+/plugin install babok_analyst@babok_analyst
+/reload-plugins
+```
+
+Local checkout (no GitHub fetch):
+
+```
+/plugin marketplace add C:/path/to/BABOK_ANALYST
+/plugin install babok_analyst@babok_analyst
+```
 
 ---
 

@@ -11,16 +11,16 @@
 One-command install across Claude Code, Codex, and Copilot CLI:
 
 ```
-/plugin marketplace add GSkuza/babok_analyst
+/plugin marketplace add GSkuza/BABOK_ANALYST
 /plugin install babok_analyst@babok_analyst
 ```
 
 ```
-codex plugin marketplace add GSkuza/babok_analyst
+codex plugin marketplace add GSkuza/BABOK_ANALYST
 ```
 
 ```
-copilot plugin marketplace add GSkuza/babok_analyst
+copilot plugin marketplace add GSkuza/BABOK_ANALYST
 copilot plugin install babok_analyst@babok_analyst
 ```
 

@@ -80,20 +80,20 @@ Install BABOK Analyst as a plugin across Claude Code, Codex, and Copilot CLI:
 
 **Claude Code:**
 ```
-/plugin marketplace add GSkuza/babok_analyst
+/plugin marketplace add GSkuza/BABOK_ANALYST
 /plugin install babok_analyst@babok_analyst
 /reload-plugins
 ```
 
 **Codex:**
 ```
-codex plugin marketplace add GSkuza/babok_analyst
+codex plugin marketplace add GSkuza/BABOK_ANALYST
 ```
 Then open `/plugins`, select the babok_analyst marketplace, and install. Authorize lifecycle hooks in `/hooks`.
 
 **GitHub Copilot CLI:**
 ```
-copilot plugin marketplace add GSkuza/babok_analyst
+copilot plugin marketplace add GSkuza/BABOK_ANALYST
 copilot plugin install babok_analyst@babok_analyst
 ```
 

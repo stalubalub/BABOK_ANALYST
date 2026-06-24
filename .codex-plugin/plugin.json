@@ -6,8 +6,8 @@
     "name": "Grzegorz Skuza",
     "url": "https://github.com/GSkuza"
   },
-  "homepage": "https://github.com/GSkuza/babok_analyst",
-  "repository": "https://github.com/GSkuza/babok_analyst",
+  "homepage": "https://github.com/GSkuza/BABOK_ANALYST",
+  "repository": "https://github.com/GSkuza/BABOK_ANALYST",
   "license": "MIT",
   "keywords": ["babok", "business-analysis", "requirements", "mcp", "productivity"],
   "skills": "./skills/",
@@ -19,7 +19,7 @@
     "developerName": "Grzegorz Skuza",
     "category": "Productivity",
     "capabilities": ["Instructions", "Lifecycle hooks", "MCP tools"],
-    "websiteURL": "https://github.com/GSkuza/babok_analyst",
+    "websiteURL": "https://github.com/GSkuza/BABOK_ANALYST",
     "defaultPrompt": [
       "Start a new BABOK analysis project.",
       "Continue the current BABOK project at the active stage.",

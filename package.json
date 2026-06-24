@@ -8,10 +8,10 @@
     "name": "Grzegorz Skuza",
     "url": "https://github.com/GSkuza"
   },
-  "homepage": "https://github.com/GSkuza/babok_analyst",
+  "homepage": "https://github.com/GSkuza/BABOK_ANALYST",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/GSkuza/babok_analyst.git"
+    "url": "git+https://github.com/GSkuza/BABOK_ANALYST.git"
   },
   "license": "MIT",
   "keywords": ["babok", "business-analysis", "claude-plugin", "mcp"],
