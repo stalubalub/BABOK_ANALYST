@@ -9,7 +9,7 @@ adapters that load that behavior in each agent.
 | Host | Files | Install |
 |------|-------|---------|
 | Claude Code | `.claude-plugin/`, `.mcp.json`, `hooks/`, `commands/`, `skills/`, `agents/` | `/plugin marketplace add GSkuza/BABOK_ANALYST` then `/plugin install babok_analyst@babok_analyst` |
-| Codex | `.codex-plugin/`, `hooks/`, `skills/` | `codex plugin marketplace add GSkuza/BABOK_ANALYST` then install from `/plugins` |
+| Codex | `.codex-plugin/`, `.agents/plugins/marketplace.json`, `plugins/babok_analyst/`, `hooks/`, `skills/` | `codex plugin marketplace add GSkuza/BABOK_ANALYST` then `codex plugin add babok_analyst@babok_analyst` |
 | GitHub Copilot CLI | `.github/plugin/`, `AGENTS.md`, `hooks/copilot-hooks.json` | `copilot plugin marketplace add GSkuza/BABOK_ANALYST` then `copilot plugin install babok_analyst@babok_analyst` |
 | Gemini CLI | `gemini-extension.json`, `AGENTS.md`, `commands/`, `skills/` | Extension manifest points `contextFileName` at `AGENTS.md` |
 | Cursor | `.cursor/mcp.json` or project MCP config | Manual MCP wiring; use `babok-mcp` paths from plugin root |

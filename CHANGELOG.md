@@ -5,6 +5,15 @@ All notable changes to BABOK Analyst project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.2] - 2026-06-24
+
+### Fixed
+- **Codex marketplace:** Added `.agents/plugins/marketplace.json` and materialized plugin bundle at `plugins/babok_analyst/` — Codex rejects empty local source path `./` and could not discover plugins from repo root alone.
+- **Codex install docs:** Marketplace add must run in a normal terminal (outside Codex sandbox) to write under `~/.codex`.
+
+### Added
+- **`scripts/sync-codex-plugin.cjs`:** Keeps `plugins/babok_analyst/` in sync with the portable plugin surface at repo root.
+
 ## [2.2.1] - 2026-06-24
 
 ### Changed

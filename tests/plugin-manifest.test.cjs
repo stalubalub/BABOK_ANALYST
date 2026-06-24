@@ -21,6 +21,24 @@ test('marketplace lists babok_analyst plugin', () => {
   assert.equal(marketplace.plugins[0].source, './');
 });
 
+test('Codex marketplace manifest points at plugins/babok_analyst', () => {
+  const marketplace = readJSON('.agents/plugins/marketplace.json');
+  assert.equal(marketplace.name, 'babok_analyst');
+  assert.equal(marketplace.plugins.length, 1);
+  assert.equal(marketplace.plugins[0].name, 'babok_analyst');
+  assert.equal(marketplace.plugins[0].source.source, 'local');
+  assert.equal(marketplace.plugins[0].source.path, './plugins/babok_analyst');
+  assert.equal(marketplace.plugins[0].policy.installation, 'AVAILABLE');
+});
+
+test('Codex plugin bundle is materialized under plugins/babok_analyst', () => {
+  const bundleRoot = path.join(root, 'plugins', 'babok_analyst');
+  assert.ok(fs.existsSync(path.join(bundleRoot, '.codex-plugin', 'plugin.json')));
+  assert.ok(fs.existsSync(path.join(bundleRoot, '.mcp.json')));
+  assert.ok(fs.existsSync(path.join(bundleRoot, 'skills', 'babok-analyst', 'SKILL.md')));
+  assert.ok(fs.existsSync(path.join(bundleRoot, 'hooks', 'claude-codex-hooks.json')));
+});
+
 test('Claude plugin manifest is schema-valid (minimal + explicit hooks only)', () => {
   const manifest = readJSON('.claude-plugin/plugin.json');
   assert.equal(manifest.name, 'babok_analyst');
