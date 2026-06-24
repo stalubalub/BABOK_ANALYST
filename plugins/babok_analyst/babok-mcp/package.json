@@ -1,6 +1,6 @@
 {
   "name": "babok-mcp",
-  "version": "2.2.2",
+  "version": "2.2.3",
   "description": "MCP Server for BABOK Agent — expose project management tools to Claude, GPT-4o, and any MCP-compatible AI assistant",
   "type": "module",
   "bin": {
