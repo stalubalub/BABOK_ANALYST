@@ -37,6 +37,15 @@ test('Codex plugin bundle is materialized under plugins/babok_analyst', () => {
   assert.ok(fs.existsSync(path.join(bundleRoot, '.mcp.json')));
   assert.ok(fs.existsSync(path.join(bundleRoot, 'skills', 'babok-analyst', 'SKILL.md')));
   assert.ok(fs.existsSync(path.join(bundleRoot, 'hooks', 'claude-codex-hooks.json')));
+  assert.ok(fs.existsSync(path.join(bundleRoot, 'assets', 'icon.svg')));
+  assert.ok(fs.existsSync(path.join(bundleRoot, 'SECURITY.md')));
+  assert.ok(fs.existsSync(path.join(bundleRoot, '.codexignore')));
+});
+
+test('Codex manifest exposes composerIcon asset', () => {
+  const manifest = readJSON('.codex-plugin/plugin.json');
+  assert.equal(manifest.interface.composerIcon, './assets/icon.svg');
+  assert.ok(fs.existsSync(path.join(root, 'assets', 'icon.svg')));
 });
 
 test('Claude plugin manifest is schema-valid (minimal + explicit hooks only)', () => {

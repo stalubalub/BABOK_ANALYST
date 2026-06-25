@@ -5,6 +5,18 @@ All notable changes to BABOK Analyst project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.7] - 2026-06-25
+
+### Added
+- **awesome-codex-plugins readiness:** `SECURITY.md`, `.codexignore`, `assets/icon.svg`, and `interface.composerIcon` in Codex manifest.
+- **CI:** `.github/workflows/hol-plugin-scanner.yml` (HOL AI Plugin Scanner gate, score ≥ 80).
+- **Dependabot:** `.github/dependabot.yml` for GitHub Actions and npm manifests.
+- **Root lockfile:** `package-lock.json` for reproducible workspace installs.
+
+### Changed
+- **GitHub Actions:** SHA-pinned `actions/checkout` and `actions/setup-node` in `lint-prompts.yml`.
+- **Codex bundle sync:** `scripts/sync-codex-plugin.cjs` now copies `assets/`, `SECURITY.md`, and `.codexignore`.
+
 ## [2.2.6] - 2026-06-24
 
 ### Changed

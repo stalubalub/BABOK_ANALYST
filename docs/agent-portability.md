@@ -56,3 +56,26 @@ All host manifests must share one pinned semver. CI runs:
 ```bash
 npm run check-versions
 ```
+
+## awesome-codex-plugins Submission
+
+BABOK Analyst is prepared for listing on
+[awesome-codex-plugins](https://github.com/hashgraph-online/awesome-codex-plugins).
+
+**In this repo (before opening the list PR):**
+
+1. Push to `main` and confirm `.github/workflows/hol-plugin-scanner.yml` passes.
+2. Note the scanner score or CI run URL from the workflow summary.
+
+**In a fork of awesome-codex-plugins:**
+
+1. Add a README entry (alphabetically in Community Plugins, between ArmorCodex and Bring Your AI Migration Auditor):
+
+   ```markdown
+   - [BABOK Analyst](https://github.com/GSkuza/BABOK_ANALYST) - BABOK v3 business analysis agent with 16 MCP tools, a 9-stage pipeline, and human-in-the-loop approval gates.
+   ```
+
+2. Add the plugin bundle under `plugins/GSkuza/BABOK_ANALYST/` (run `node scripts/sync-codex-plugin.cjs` first, then copy `plugins/babok_analyst/` contents plus root `.codex-plugin/`, `assets/`, `SECURITY.md`, `.codexignore`).
+3. Update `plugins.json` and `.agents/plugins/marketplace.json` per [CONTRIBUTING.md](https://github.com/hashgraph-online/awesome-codex-plugins/blob/main/CONTRIBUTING.md).
+4. Open a PR with the scanner score or link to the passing CI run on this repository.
+

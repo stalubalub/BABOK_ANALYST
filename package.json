@@ -1,6 +1,6 @@
 {
   "name": "babok-analyst",
-  "version": "2.2.6",
+  "version": "2.2.7",
   "description": "BABOK Analyst — root workspace and plugin marketplace distribution",
   "private": true,
   "type": "module",

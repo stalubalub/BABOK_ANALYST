@@ -1,0 +1,36 @@
+name: HOL Plugin Scanner
+
+# Quality and security gate for awesome-codex-plugins listing.
+# Required: score >= 80/130, no critical/high findings, workflow on main.
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  scan:
+    name: HOL Plugin Scanner
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+
+      - name: HOL Plugin Scanner
+        uses: hashgraph-online/ai-plugin-scanner-action@7efab6be3cc2e2b020492c77f769963070905d6e # v1.2.184
+        with:
+          plugin_dir: "."
+          mode: scan
+          min_score: 80
+          fail_on_severity: high
+          format: text
+          upload_sarif: true
+          write_step_summary: true
