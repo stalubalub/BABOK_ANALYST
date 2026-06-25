@@ -12,7 +12,6 @@ on:
 
 permissions:
   contents: read
-  security-events: write
 
 jobs:
   scan:
@@ -20,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
         with:
           persist-credentials: false
 
@@ -32,5 +31,5 @@ jobs:
           min_score: 80
           fail_on_severity: high
           format: text
-          upload_sarif: true
+          upload_sarif: false
           write_step_summary: true
