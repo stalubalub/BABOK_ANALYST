@@ -63,10 +63,46 @@ function isShellSafe(p) {
   return typeof p === 'string' && /^[A-Za-z0-9 _.\-:/\\~]+$/.test(p);
 }
 
+/**
+ * Resolve the BABOK projects directory (matches babok-mcp project.js search order).
+ * @returns {string}
+ */
+function getProjectsDir() {
+  if (process.env.BABOK_PROJECTS_DIR && fs.existsSync(process.env.BABOK_PROJECTS_DIR)) {
+    return path.resolve(process.env.BABOK_PROJECTS_DIR);
+  }
+  const cwdProjects = path.join(process.cwd(), 'projects');
+  if (fs.existsSync(cwdProjects)) return cwdProjects;
+  const rootProjects = path.join(getPluginRoot(), 'projects');
+  if (fs.existsSync(rootProjects)) return rootProjects;
+  return cwdProjects;
+}
+
+/**
+ * Resolve a full BABOK-YYYYMMDD-XXXX project ID from a full or partial ID.
+ * @param {string} partialId
+ * @returns {string|null}
+ */
+function resolveProjectId(partialId) {
+  const dir = getProjectsDir();
+  if (!fs.existsSync(dir)) return null;
+  const ids = fs.readdirSync(dir).filter(name =>
+    name.startsWith('BABOK-') && fs.statSync(path.join(dir, name)).isDirectory(),
+  );
+  if (!partialId) return ids.length === 1 ? ids[0] : null;
+  const exact = ids.find(id => id === partialId);
+  if (exact) return exact;
+  const upper = String(partialId).toUpperCase();
+  const matches = ids.filter(id => id.includes(upper));
+  return matches.length === 1 ? matches[0] : null;
+}
+
 module.exports = {
   getPluginRoot,
   getConfigDir,
   getConfigPath,
   getClaudeDir,
   isShellSafe,
+  getProjectsDir,
+  resolveProjectId,
 };
