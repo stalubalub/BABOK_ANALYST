@@ -240,62 +240,15 @@ Reasoning: DPIA requires precise regulatory analysis under GDPR Article 35
 
 ---
 
-## Deliverable Template: STAGE_07_Risk_Assessment.md
+## Deliverable Template
 
-```markdown
-# STAGE 7: RISK ASSESSMENT & MITIGATION STRATEGY
+**Single source of truth:** `templates/stages/STAGE_07_Risk_Assessment.md`
 
-**Project:** [Project Name]
-**Project ID:** [BABOK-YYYYMMDD-XXXX]
-**Date:** [AUTO-GENERATED]
-**Status:** APPROVED BY HUMAN on [DATE]
+Load before writing the deliverable:
+- MCP: `babok_get_stage_template` with `stage_n: 7`
+- CLI/file: read `templates/stages/STAGE_07_Risk_Assessment.md`
 
----
-
-## EXECUTIVE SUMMARY (1 PAGE)
-
-**Purpose of This Stage:**
-Identify, assess, and plan mitigation for all project risks.
-
-**Key Findings:**
-1. [X] risks identified: [Y] CRITICAL, [Z] HIGH, [W] MODERATE, [V] LOW
-2. Top 3 risks: [Risk 1], [Risk 2], [Risk 3]
-3. DPIA: [Required/Not Required] — [Status]
-4. Recommended contingency reserve: [X% of budget] + [Y weeks timeline buffer]
-
-**Top Risks Summary:**
-| # | Risk | Probability | Impact | Strategy | Owner |
-|---|------|------------|--------|----------|-------|
-| 1 | [Risk] | [H/M/L] | [H/M/L] | [Strategy] | [Owner] |
-| 2 | [Risk] | [H/M/L] | [H/M/L] | [Strategy] | [Owner] |
-| 3 | [Risk] | [H/M/L] | [H/M/L] | [Strategy] | [Owner] |
-
----
-
-## DETAILED ANALYSIS
-
-### 1. RISK REGISTER
-[Full register: all risks with ID, description, probability, impact, score]
-
-### 2. RISK PRIORITIZATION MATRIX
-[Visual matrix + priority table]
-
-### 3. MITIGATION STRATEGIES
-[For each CRITICAL and HIGH risk: strategy, actions, owner, trigger, contingency]
-
-### 4. DPIA (if applicable)
-[Complete DPIA document]
-
-### 5. RISK MONITORING PLAN
-[How and when risks will be reviewed, escalation triggers]
-
----
-
-## HUMAN APPROVAL
-
-**Next Command:** `Approve 7` to proceed to Stage 8
-```
-
+**Critical:** Keep all H2 headings from the template unchanged so `babok score` completeness checks pass.
 ---
 
 ## Quality Checklist for Stage 7

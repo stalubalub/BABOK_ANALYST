@@ -10,8 +10,9 @@
  * Returns a Map<headingTextLower, sectionContent>.
  */
 function splitSections(content) {
+  const normalized = content.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
   const sections = new Map();
-  const lines = content.split('\n');
+  const lines = normalized.split('\n');
   let currentKey = '__preamble__';
   let currentLines = [];
 

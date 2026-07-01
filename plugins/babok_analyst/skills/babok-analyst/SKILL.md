@@ -57,7 +57,7 @@ explicit human approval. Ask questions **one at a time** with a progress indicat
 
 Agents **cannot** call `babok_approve_stage` (PreToolUse hook). Saving on approved stages requires `babok_open_revision` first.
 
-## MCP tools (18)
+## MCP tools (19)
 
 When MCP is connected, prefer these tools over manual file edits:
 
@@ -66,6 +66,7 @@ When MCP is connected, prefer these tools over manual file edits:
 | `babok_new_project` | Create project, get ID |
 | `babok_list_projects` | List all projects |
 | `babok_get_stage` | Stage prompt + journal + existing deliverable |
+| `babok_get_stage_template` | Deliverable skeleton + modules for current stage |
 | `babok_save_deliverable` | Persist stage markdown |
 | `babok_submit_for_review` | Agent submits deliverable SHA for human review (key 1) |
 | `babok_open_revision` | Unlock approved stage for revision |
@@ -95,4 +96,5 @@ Stage instruction resources: `babok://stages/0` through `babok://stages/8`.
 ## Stage prompt files
 
 Detailed per-stage instructions live in `BABOK_AGENT/stages/BABOK_agent_stage_N.md`.
-Load the relevant stage file before producing a deliverable.
+Deliverable structure (headings for `babok score`) lives in `templates/stages/STAGE_0N_*.md`.
+Load both via `babok_get_stage` and `babok_get_stage_template` before producing a deliverable.

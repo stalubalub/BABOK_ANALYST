@@ -2,7 +2,7 @@
 name: babok-stage-7
 description: Agent Stage 7 BABOK — Risk Assessment & Mitigation. Użyj po zatwierdzeniu Stage 6 (lub równolegle z Stage 2 dla wstępnego skanu ryzyka). Identyfikuje, analizuje i priorytetyzuje ryzyka projektu, definiuje strategie mitygacji. Jeśli projekt dotyczy GDPR, wymagana jest sekcja DPIA. Produkuje Risk Register.
 model: claude-sonnet-4-6
-tools: mcp__babok__babok_get_stage, mcp__babok__babok_save_deliverable, mcp__babok__babok_get_deliverable
+tools: mcp__babok__babok_get_stage, mcp__babok__babok_get_stage_template, mcp__babok__babok_save_deliverable, mcp__babok__babok_get_deliverable
 ---
 
 # BABOK Stage 7 Agent — Risk Assessment & Mitigation

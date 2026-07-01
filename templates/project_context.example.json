@@ -33,6 +33,20 @@
     "ISO 9001:2015 quality management"
   ],
 
+  "regulatory_deadlines": [
+    { "regulation": "KSeF e-invoicing", "deadline": "2026-12-31", "mandatory": true },
+    { "regulation": "GDPR DPIA (if processing changes)", "deadline": "2026-09-01", "mandatory": false }
+  ],
+
+  "roi_targets": {
+    "payback_months_max": 36,
+    "npv_min": 0,
+    "irr_min_percent": 8,
+    "discount_rate_percent": 8
+  },
+
+  "industry_pack": "manufacturing",
+
   "budget": {
     "range": "800000 - 1500000 PLN",
     "currency": "PLN",

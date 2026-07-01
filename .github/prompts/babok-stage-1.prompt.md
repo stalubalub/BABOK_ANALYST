@@ -9,6 +9,14 @@ description: BABOK Stage 1 — Project Initialization & Stakeholder Mapping
 Read the full stage instructions from the file:
 `BABOK_AGENT/stages/BABOK_agent_stage_1.md`
 
+## Templates to Use
+
+Primary deliverable skeleton:
+
+- `templates/stages/STAGE_01_Project_Initialization.md`
+
+MCP: `babok_get_stage_template(stage_n: 1, include_modules: true)`
+
 ## Context Template
 
 Read the project context structure from:

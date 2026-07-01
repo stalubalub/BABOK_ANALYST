@@ -11,8 +11,13 @@ Read the full stage instructions from:
 
 ## Templates to Use
 
-Follow the structure from:
-`templates/Risk_Register_Template.md`
+Primary deliverable skeleton:
+
+- `templates/stages/STAGE_07_Risk_Assessment.md`
+
+Module: `templates/modules/DPIA_Template.md` (when GDPR applies)
+
+MCP: `babok_get_stage_template(stage_n: 7, include_modules: true)`
 
 ## Prerequisites
 

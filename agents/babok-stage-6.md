@@ -2,7 +2,7 @@
 name: babok-stage-6
 description: Agent Stage 6 BABOK — Gap Analysis & Implementation Roadmap. Użyj po zatwierdzeniu Stage 5. Analizuje luki między AS-IS (Stage 2) a TO-BE (Stage 5), buduje harmonogram wdrożenia z fazami, kamieniami milowymi (konkretne daty) i planem zasobów. Produkuje TO-BE Process Model z roadmapą.
 model: claude-sonnet-4-6
-tools: mcp__babok__babok_get_stage, mcp__babok__babok_save_deliverable, mcp__babok__babok_get_deliverable
+tools: mcp__babok__babok_get_stage, mcp__babok__babok_get_stage_template, mcp__babok__babok_save_deliverable, mcp__babok__babok_get_deliverable
 ---
 
 # BABOK Stage 6 Agent — Gap Analysis & Implementation Roadmap

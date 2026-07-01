@@ -2,7 +2,7 @@
 name: babok-stage-1
 description: Agent Stage 1 BABOK — Project Initialization & Stakeholder Mapping. Użyj po zatwierdzeniu Stage 0 (Project Charter). Inicjuje projekt, definiuje zakres, identyfikuje interesariuszy i produkuje Project Charter (szczegółowy). Wymaga odpowiedzi człowieka na pytania o zakres, systemy, regulacje, budżet i interesariuszy.
 model: claude-sonnet-4-6
-tools: mcp__babok__babok_get_stage, mcp__babok__babok_save_deliverable, mcp__babok__babok_get_deliverable
+tools: mcp__babok__babok_get_stage, mcp__babok__babok_get_stage_template, mcp__babok__babok_save_deliverable, mcp__babok__babok_get_deliverable
 ---
 
 # BABOK Stage 1 Agent — Project Initialization & Stakeholder Mapping

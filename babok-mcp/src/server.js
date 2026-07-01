@@ -31,6 +31,7 @@ import {
 } from './lib/journal.js';
 
 import { hashFileUtf8, sha256Content } from './lib/two-key-gate.js';
+import { getStageTemplatePayload } from './lib/templates.js';
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  Helper: format journal summary for LLM consumption
@@ -286,6 +287,67 @@ server.tool(
 
     return {
       content: [{ type: 'text', text: sections.join('\n') }],
+    };
+  }
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+//  TOOL: babok_get_stage_template
+// ─────────────────────────────────────────────────────────────────────────────
+
+server.tool(
+  'babok_get_stage_template',
+  'Get the deliverable output template for a stage (skeleton + optional modules). Use before writing STAGE_0N deliverables to match required rubric headings.',
+  {
+    stage_n: z.number().int().min(0).max(8).describe('Stage number (0–8)'),
+    include_modules: z.boolean().optional().default(true).describe('Include RTM, DPIA, industry supplements, etc.'),
+    project_id: z.string().optional().describe('Optional project ID — loads journal context for industry pack resolution'),
+  },
+  async ({ stage_n, include_modules, project_id }) => {
+    let projectContext = null;
+    if (project_id) {
+      const fullId = resolveProjectId(project_id);
+      if (fullId) {
+        try {
+          const journal = readJournal(fullId);
+          projectContext = {
+            industry_pack: journal.industry_pack,
+            company: { industry: journal.industry || journal.project_industry },
+            compliance: journal.compliance,
+          };
+        } catch {
+          // journal optional for template-only fetch
+        }
+      }
+    }
+
+    const payload = getStageTemplatePayload(stage_n, {
+      includeModules: include_modules,
+      projectContext,
+    });
+
+    const sections = [
+      `# Stage ${stage_n} Output Template`,
+      `**Primary file:** ${payload.deliverable_file}`,
+      `**Template path:** ${payload.primary}`,
+      '',
+      '## Required Sections (quality rubric)',
+      ...(payload.required_sections.length
+        ? payload.required_sections.map(s => `- ${s}`)
+        : ['- (Stage 0 — no automated rubric; follow charter structure)']),
+      '',
+      '## Template Files Loaded',
+      ...payload.template_files.map(f => `- ${f}`),
+      '',
+      '## Combined Template Content',
+      payload.combined_text || '(no template files found — check BABOK_TEMPLATES_DIR)',
+    ];
+
+    return {
+      content: [{
+        type: 'text',
+        text: sections.join('\n'),
+      }],
     };
   }
 );

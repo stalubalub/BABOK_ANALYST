@@ -1,4 +1,6 @@
-# Business Requirements Document (BRD) Template
+> **Moved:** Use `exports/Executive_BRD_Export_Template.md` for post-Stage-8 rollup. Per-stage work uses `templates/stages/`.
+
+# Business Requirements Document (BRD) Template — legacy path
 
 **Project Name:** [Project Name]  
 **Document Version:** 1.0  

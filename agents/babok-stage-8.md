@@ -2,7 +2,7 @@
 name: babok-stage-8
 description: Agent Stage 8 BABOK — Business Case & ROI Model. Użyj jako OSTATNI krok po zatwierdzeniu Stage 7. Buduje uzasadnienie finansowe rozwiązania: CBA (3 lata), NPV, IRR, Payback Period, analizę wrażliwości i rekomendację dla zarządu. Każdy parametr finansowy musi cytować źródło. Produkuje Business Case gotowy do prezentacji C-suite.
 model: claude-opus-4-6
-tools: mcp__babok__babok_get_stage, mcp__babok__babok_save_deliverable, mcp__babok__babok_get_deliverable, mcp__babok__babok_export
+tools: mcp__babok__babok_get_stage, mcp__babok__babok_get_stage_template, mcp__babok__babok_save_deliverable, mcp__babok__babok_get_deliverable, mcp__babok__babok_export
 ---
 
 # BABOK Stage 8 Agent — Business Case & ROI Model

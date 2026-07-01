@@ -2,7 +2,7 @@
 name: babok-stage-3
 description: Agent Stage 3 BABOK — Problem Domain Analysis. Użyj po zatwierdzeniu Stage 2. Przeprowadza analizę przyczyn źródłowych (5 Whys / Ishikawa), tworzy macierz priorytetyzacji problemów i mierzalne deklaracje problemów. Każdy problem musi wywodzić się z bóli Stage 1 lub bottlenecków Stage 2.
 model: claude-sonnet-4-6
-tools: mcp__babok__babok_get_stage, mcp__babok__babok_save_deliverable, mcp__babok__babok_get_deliverable
+tools: mcp__babok__babok_get_stage, mcp__babok__babok_get_stage_template, mcp__babok__babok_save_deliverable, mcp__babok__babok_get_deliverable
 ---
 
 # BABOK Stage 3 Agent — Problem Domain Analysis

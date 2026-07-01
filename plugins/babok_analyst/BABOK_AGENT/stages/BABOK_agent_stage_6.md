@@ -211,68 +211,15 @@ Context: [AS-IS from Stage 2, TO-BE from Stage 5, requirements from Stage 4, con
 
 ---
 
-## Deliverable Template: STAGE_06_Gap_Analysis_Roadmap.md
+## Deliverable Template
 
-```markdown
-# STAGE 6: GAP ANALYSIS & IMPLEMENTATION ROADMAP
+**Single source of truth:** `templates/stages/STAGE_06_Gap_Analysis_Roadmap.md`
 
-**Project:** [Project Name]
-**Project ID:** [BABOK-YYYYMMDD-XXXX]
-**Date:** [AUTO-GENERATED]
-**Status:** APPROVED BY HUMAN on [DATE]
+Load before writing the deliverable:
+- MCP: `babok_get_stage_template` with `stage_n: 6`
+- CLI/file: read `templates/stages/STAGE_06_Gap_Analysis_Roadmap.md`
 
----
-
-## EXECUTIVE SUMMARY (1 PAGE)
-
-**Purpose of This Stage:**
-Define the path from current state to target state with clear phases, resources, and milestones.
-
-**Key Findings:**
-1. [X] gaps identified between AS-IS and TO-BE
-2. [Y]-phase implementation plan over [Z] months
-3. Total resource requirement: [N FTE-months] internal + [M] external
-4. First value delivery (Phase 1): [X weeks] from project start
-
-**Implementation Timeline:**
-| Phase | Duration | Key Deliverable |
-|-------|----------|-----------------|
-| Phase 0 | [X weeks] | Environment + team ready |
-| Phase 1 | [X weeks] | Core features live |
-| Phase 2 | [X weeks] | Full integration |
-| Phase 3 | [X weeks] | All features |
-| Phase 4 | [X weeks] | Go-live + stabilization |
-| **TOTAL** | **[X months]** | **Full deployment** |
-
----
-
-## DETAILED ANALYSIS
-
-### 1. GAP ANALYSIS MATRIX
-[Full gap matrix with all gaps]
-
-### 2. IMPLEMENTATION PHASES
-[Detailed phase descriptions with entry/exit criteria]
-
-### 3. RESOURCE PLAN
-[Resource allocation per phase]
-
-### 4. CHANGE MANAGEMENT PLAN
-[Communication, training, resistance management]
-
-### 5. TRAINING PLAN
-[Training modules, audiences, methods]
-
-### 6. GO-LIVE CRITERIA
-[Checklist for production readiness]
-
----
-
-## HUMAN APPROVAL
-
-**Next Command:** `Approve 6` to proceed to Stage 7
-```
-
+**Critical:** Keep all H2 headings from the template unchanged so `babok score` completeness checks pass.
 ---
 
 ## Quality Checklist for Stage 6

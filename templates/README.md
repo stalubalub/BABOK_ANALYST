@@ -1,223 +1,121 @@
 # BABOK Agent Templates
 
-This directory contains ready-to-use templates for common business analysis deliverables, aligned with BABOK® standards and adapted for SME/MSP contexts.
+Stage-first deliverable templates aligned with `quality_scoring_rubric.json` and the 9-stage BABOK ANALYST pipeline.
 
 ---
 
-## Available Templates
+## Directory Structure
 
-### 1. Business Requirements Document (BRD)
-**File:** `BRD_Template.md`
-
-A comprehensive template for documenting business requirements, including:
-- Executive summary and business objectives
-- Stakeholder analysis
-- Functional and non-functional requirements
-- Scope definition
-- Cost-benefit analysis
-- Risk assessment
-- Implementation approach
-
-**When to Use:** At project initiation to capture and document all business requirements
-
----
-
-### 2. Stakeholder Analysis
-**File:** `Stakeholder_Analysis_Template.md`
-
-Complete stakeholder management framework including:
-- Stakeholder register
-- Power/Interest matrix
-- Detailed stakeholder profiles
-- RACI matrix
-- Communication plan
-- Engagement strategies
-
-**When to Use:** Early in project to identify, analyze, and plan stakeholder engagement
-
----
-
-### 3. User Story
-**File:** `User_Story_Template.md`
-
-Agile user story template with:
-- User story format (As a... I want... So that...)
-- Acceptance criteria using Given-When-Then format
-- Definition of Done checklist
-- Story estimation fields
-- Testing notes
-- Examples for reference
-
-**When to Use:** During requirements elaboration in Agile/Scrum projects
-
----
-
-### 4. Risk Register
-**File:** `Risk_Register_Template.md`
-
-Comprehensive risk management template featuring:
-- Risk register table
-- Risk scoring matrix (probability × impact)
-- Risk heat map
-- Detailed risk profiles
-- Mitigation and contingency plans
-- Risk tracking and trending
-
-**When to Use:** Throughout project lifecycle for risk identification and management
-
----
-
-## How to Use These Templates
-
-### 1. Copy the Template
-Create a copy of the template file for your specific project:
-```bash
-cp BRD_Template.md My_Project_BRD.md
+```
+templates/
+├── manifest.json                 # Stage → primary + modules mapping
+├── project_context.schema.json   # JSON Schema for babok run --context
+├── project_context.example.json
+├── stages/                       # PRIMARY — one skeleton per stage (0–8)
+├── modules/                      # RTM, DPIA, User Story, etc.
+├── exports/                      # Post-project rollup (not per-stage)
+└── industry/                     # Optional supplements (manufacturing, compliance)
 ```
 
-### 2. Fill in Project Information
-Replace all placeholder text (in [brackets]) with your actual project information:
-- [Project Name] → Your project name
-- [Date] → Current date
-- [Your Name] → Your name
-- Etc.
+---
 
-### 3. Customize as Needed
-These templates are starting points. Feel free to:
-- Add sections relevant to your specific context
-- Remove sections that don't apply
-- Adjust formatting to match your organization's standards
-- Extend examples with industry-specific content
+## Stage Deliverables (Primary)
 
-### 4. Maintain Version Control
-- Update the version history table when making changes
-- Use consistent version numbering (1.0, 1.1, 2.0, etc.)
-- Document who made changes and why
+| Stage | Template | CLI deliverable file |
+|-------|----------|----------------------|
+| 0 | `stages/STAGE_00_Project_Charter.md` | `STAGE_00_Project_Charter.md` |
+| 1 | `stages/STAGE_01_Project_Initialization.md` | `STAGE_01_Project_Initialization.md` |
+| 2 | `stages/STAGE_02_Current_State_Analysis.md` | `STAGE_02_Current_State_Analysis.md` |
+| 3 | `stages/STAGE_03_Problem_Domain_Analysis.md` | `STAGE_03_Problem_Domain_Analysis.md` |
+| 4 | `stages/STAGE_04_Solution_Requirements.md` | `STAGE_04_Solution_Requirements.md` |
+| 5 | `stages/STAGE_05_Future_State_Design.md` | `STAGE_05_Future_State_Design.md` |
+| 6 | `stages/STAGE_06_Gap_Analysis_Roadmap.md` | `STAGE_06_Gap_Analysis_Roadmap.md` |
+| 7 | `stages/STAGE_07_Risk_Assessment.md` | `STAGE_07_Risk_Assessment.md` |
+| 8 | `stages/STAGE_08_Business_Case_ROI.md` | `STAGE_08_Business_Case_ROI.md` |
+
+**H2 headings in each skeleton match `babok score` completeness checks.**
 
 ---
 
-## Template Categories
+## Modules
 
-### Strategic Documents
-- Business Requirements Document (BRD)
-- Business Case (coming soon)
-- Feasibility Study (coming soon)
-
-### Planning Documents
-- Stakeholder Analysis
-- Risk Register
-- Requirements Traceability Matrix (coming soon)
-
-### Requirements Documents
-- User Stories
-- Use Cases (coming soon)
-- Functional Specification Document (coming soon)
-
-### Analysis Documents
-- Process Documentation (coming soon)
-- Data Flow Diagrams (coming soon)
-- Gap Analysis (coming soon)
+| Module | Used in stage(s) |
+|--------|------------------|
+| `modules/RTM_Template.md` | 4 |
+| `modules/User_Story_Template.md` | 4 |
+| `modules/Change_Request_Template.md` | 4 |
+| `modules/DPIA_Template.md` | 7 |
+| `modules/Gap_Analysis_Table_Template.md` | 6 |
+| `modules/Business_Case_Financial_Model_Template.md` | 8 |
+| `modules/AS_IS_Process_Map_Template.md` | 2 |
+| `modules/TO_BE_Design_Decisions_Template.md` | 5 |
+| `modules/Short_Rationale_Evidence_Block.md` | 1–8 |
+| `modules/Approval_Section_Template.md` | 1 |
 
 ---
 
-## Best Practices
+## Industry Packs
 
-### Documentation Standards
-✅ **Use Clear Headers:** Organize with H1, H2, H3 hierarchy  
-✅ **Version Control:** Always maintain version history  
-✅ **Plain Language:** Avoid jargon unless necessary  
-✅ **Visual Aids:** Use tables, lists, and diagrams  
-✅ **Traceability:** Link requirements to objectives  
+Set `industry_pack` in `project_context.json` (or rely on `company.industry` / `compliance`):
 
-### SME/MSP Considerations
-✅ **Be Concise:** Respect limited stakeholder time  
-✅ **Focus on Value:** Emphasize ROI and quick wins  
-✅ **Practical Approach:** Balance rigor with agility  
-✅ **Accessible Format:** Use Markdown for easy editing  
-
-### Quality Checklist
-Before finalizing any document:
-- [ ] All placeholder text replaced
-- [ ] Version and date updated
-- [ ] Reviewed for completeness
-- [ ] Checked for accuracy
-- [ ] Verified consistency
-- [ ] Stakeholder review completed
-- [ ] Approval obtained
+| Pack | Supplements |
+|------|-------------|
+| `manufacturing` | OEE KPIs, shop-floor AS-IS patterns |
+| `distribution` | WMS inventory KPIs |
+| `compliance` | KSeF FR-020, GDPR DPIA extensions |
 
 ---
 
-## Customization Guide
+## How to Use
 
-### For Your Organization
-Add these sections to templates as needed:
-- Company logo and branding
-- Document classification (confidential, internal, public)
-- Legal disclaimers
-- Document control numbers
-- Compliance requirements
+### CLI automated run
 
-### For Your Industry
-Tailor content for specific industries:
-- **Healthcare:** Add HIPAA compliance sections
-- **Finance:** Add regulatory compliance requirements
-- **Manufacturing:** Add quality standards references
-- **Software/SaaS:** Add technical architecture sections
+```bash
+babok run --context my_project_context.json
+```
 
-### For Your Methodology
-Adapt to your project methodology:
-- **Waterfall:** More comprehensive upfront documentation
-- **Agile:** Lighter weight, iterative documentation
-- **Hybrid:** Mix of upfront planning and iterative refinement
+Templates for each stage are injected from `manifest.json` via `cli/src/templates.js`.
 
----
+### MCP agents
 
-## Contributing
+```
+babok_get_stage_template(stage_n: 4, include_modules: true)
+```
 
-Have a template to share? Contributions are welcome!
+Call **before** `babok_save_deliverable`. Preserve template H2 headings.
 
-### Template Submission Guidelines
-1. Follow the existing Markdown format
-2. Include comprehensive examples
-3. Add placeholder text in [brackets]
-4. Provide clear instructions for use
-5. Align with BABOK® principles
+### Manual copy
+
+```bash
+cp templates/stages/STAGE_04_Solution_Requirements.md projects/<id>/STAGE_04_Solution_Requirements.md
+```
 
 ---
 
-## Additional Resources
+## Legacy Files (root)
 
-### BABOK® Reference
-These templates are inspired by:
-- BABOK® Guide Version 3
-- Agile Extension to the BABOK® Guide
-- Business Analysis for Practitioners
-
-### Related Documentation
-- [System Prompt & Operating Instructions](../BABOK_AGENT_SYSTEM_PROMPT.md)
-- [Agent Configuration](../agent_config.json)
-- [Workflows Guide](../docs/workflows.md)
+| File | Status |
+|------|--------|
+| `BRD_Template.md` | Deprecated — use `exports/Executive_BRD_Export_Template.md` for rollup only |
+| `User_Story_Template.md` | Moved to `modules/` |
+| `Stakeholder_Analysis_Template.md` | Reference; content in `stages/STAGE_01_*` |
+| `Risk_Register_Template.md` | Reference; content in `stages/STAGE_07_*` |
 
 ---
 
-## Template Request
+## Validation
 
-Missing a template you need? Please open an issue on the repository with:
-- Template name and purpose
-- Key sections it should include
-- Use case or scenario
-- Any specific requirements
+```bash
+node --test tests/unit/templates.test.js
+```
+
+CI runs this via `.github/workflows/lint-prompts.yml`.
 
 ---
 
 ## Version History
 
-| Version | Date | Changes | Author |
-|---------|------|---------|--------|
-| 1.0 | 2026-02-07 | Initial template collection | BABOK Agent |
-
----
-
-## License
-
-All templates are provided under the same license as the main project and can be freely used and adapted for your business analysis needs.
+| Version | Date | Changes |
+|---------|------|---------|
+| 2.0 | 2026-07-01 | Stage-first architecture, manifest, modules, industry packs, MCP tool |
+| 1.0 | 2026-02-07 | Initial BRD, Stakeholder, User Story, Risk Register |

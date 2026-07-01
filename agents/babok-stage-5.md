@@ -2,7 +2,7 @@
 name: babok-stage-5
 description: Agent Stage 5 BABOK — Future State Design (TO-BE). Użyj po zatwierdzeniu Stage 4. Projektuje architekturę rozwiązania i procesy przyszłego stanu. Produkuje Functional Specification Document (FSD) z mapą TO-BE, kluczowymi decyzjami projektowymi i punktami integracji. Każde wymaganie Must-Have z Stage 4 musi mieć odpowiadający element TO-BE.
 model: claude-sonnet-4-6
-tools: mcp__babok__babok_get_stage, mcp__babok__babok_save_deliverable, mcp__babok__babok_get_deliverable
+tools: mcp__babok__babok_get_stage, mcp__babok__babok_get_stage_template, mcp__babok__babok_save_deliverable, mcp__babok__babok_get_deliverable
 ---
 
 # BABOK Stage 5 Agent — Future State Design (TO-BE)

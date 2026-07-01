@@ -215,64 +215,15 @@ LOW IMPACT
 
 ---
 
-## Deliverable Template: STAGE_03_Problem_Domain_Analysis.md
+## Deliverable Template
 
-```markdown
-# STAGE 3: PROBLEM DOMAIN ANALYSIS
+**Single source of truth:** `templates/stages/STAGE_03_Problem_Domain_Analysis.md`
 
-**Project:** [Project Name]
-**Project ID:** [BABOK-YYYYMMDD-XXXX]
-**Date:** [AUTO-GENERATED]
-**Status:** APPROVED BY HUMAN on [DATE]
+Load before writing the deliverable:
+- MCP: `babok_get_stage_template` with `stage_n: 3`
+- CLI/file: read `templates/stages/STAGE_03_Problem_Domain_Analysis.md`
 
----
-
-## EXECUTIVE SUMMARY (1 PAGE)
-
-**Purpose of This Stage:**
-Identify root causes of current state problems and prioritize them for solution design.
-
-**Key Findings:**
-1. [X] root causes identified from [Y] symptoms documented in Stage 2
-2. [Z] quick wins identified with estimated savings of [CURRENCY/year]
-3. [W] strategic initiatives required for long-term improvement
-4. Critical dependency chain: [RC-A] → [RC-B] → [RC-C]
-
-**Recommended Priority Order:**
-| Priority | Root Cause | Quadrant | Expected Impact | Timeline |
-|----------|-----------|----------|-----------------|----------|
-| 1 | [Quick Win 1] | Quick Win | [Impact] | [Weeks] |
-| 2 | [Quick Win 2] | Quick Win | [Impact] | [Weeks] |
-| 3 | [Strategic 1] | Strategic | [Impact] | [Months] |
-| ... | ... | ... | ... | ... |
-
----
-
-## DETAILED ANALYSIS
-
-### 1. PROBLEM CATEGORIZATION
-[Full categorization table]
-
-### 2. ROOT CAUSE ANALYSIS
-[5 Whys for each critical problem]
-[Ishikawa diagrams for top 3 problems]
-
-### 3. IMPACT-EFFORT MATRIX
-[Full scoring and matrix visualization]
-
-### 4. DEPENDENCY MAP
-[Problem dependencies and critical path]
-
-### 5. RECOMMENDED APPROACH
-[Prioritized list with rationale for sequencing]
-
----
-
-## HUMAN APPROVAL
-
-**Next Command:** `Approve 3` to proceed to Stage 4
-```
-
+**Critical:** Keep all H2 headings from the template unchanged so `babok score` completeness checks pass.
 ---
 
 ## Quality Checklist for Stage 3

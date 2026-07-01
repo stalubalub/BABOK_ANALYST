@@ -11,9 +11,17 @@ Read the full stage instructions from:
 
 ## Templates to Use
 
-Read and follow the structure from these templates:
-- `templates/User_Story_Template.md`
-- `templates/BRD_Template.md`
+Primary deliverable skeleton (required H2 headings):
+
+- `templates/stages/STAGE_04_Solution_Requirements.md`
+
+Modules (see `templates/manifest.json`):
+
+- `templates/modules/User_Story_Template.md`
+- `templates/modules/RTM_Template.md`
+- `templates/modules/Change_Request_Template.md`
+
+MCP: `babok_get_stage_template(stage_n: 4, include_modules: true)`
 
 ## Prerequisites
 
@@ -23,12 +31,12 @@ Read and follow the structure from these templates:
 
 1. Define functional and non-functional requirements.
 2. Generate a complete Stage 4 deliverable covering:
-   - Business Requirements Document (BRD) structure
-   - Functional requirements (as user stories with acceptance criteria)
-   - Non-functional requirements (performance, security, scalability)
-   - Integration requirements
-   - Data migration requirements
+   - Functional requirements (FR-NNN) with MoSCoW
+   - Non-functional requirements (NFR-NNN) with numeric thresholds
+   - User stories with GIVEN-WHEN-THEN acceptance criteria
    - Requirements traceability matrix (RTM)
+   - Change control process
+   - Regulatory compliance requirements
 
 3. Save by running:
    ```
@@ -37,4 +45,4 @@ Read and follow the structure from these templates:
 
 ## Output Format
 
-Professional Markdown following the BRD and User Story templates.
+Professional Markdown following `templates/stages/STAGE_04_Solution_Requirements.md`.

@@ -185,65 +185,15 @@ If migrating from existing systems:
 
 ---
 
-## Deliverable Template: STAGE_05_Future_State_Design.md
+## Deliverable Template
 
-```markdown
-# STAGE 5: FUTURE STATE DESIGN (TO-BE)
+**Single source of truth:** `templates/stages/STAGE_05_Future_State_Design.md`
 
-**Project:** [Project Name]
-**Project ID:** [BABOK-YYYYMMDD-XXXX]
-**Date:** [AUTO-GENERATED]
-**Status:** APPROVED BY HUMAN on [DATE]
+Load before writing the deliverable:
+- MCP: `babok_get_stage_template` with `stage_n: 5`
+- CLI/file: read `templates/stages/STAGE_05_Future_State_Design.md`
 
----
-
-## EXECUTIVE SUMMARY (1 PAGE)
-
-**Purpose of This Stage:**
-Design the target solution architecture and optimized processes.
-
-**Key Findings:**
-1. TO-BE processes reduce [primary process] time by [X%]
-2. Selected architecture: [Option chosen] — [rationale]
-3. [X] system integrations required ([Y] for go-live, [Z] for Phase 2+)
-4. Estimated implementation complexity: [LOW/MEDIUM/HIGH]
-
-**Architecture Decision:**
-| Aspect | Decision | Rationale |
-|--------|----------|-----------|
-| Deployment | [Cloud/On-prem/Hybrid] | [Rationale] |
-| Approach | [Buy/Build/Hybrid] | [Rationale] |
-| Integration | [API/File/Event-based] | [Rationale] |
-
----
-
-## DETAILED ANALYSIS
-
-### 1. TO-BE PROCESS MAPS
-[Optimized process for each core workflow]
-[AS-IS vs TO-BE comparison tables]
-
-### 2. TARGET SYSTEM ARCHITECTURE
-[Architecture diagram description]
-[Component list with technology choices]
-
-### 3. INTEGRATION ARCHITECTURE
-[Integration map with all system connections]
-[Protocols, authentication, error handling]
-
-### 4. DATA ARCHITECTURE
-[Data entities, storage, retention, migration plan]
-
-### 5. REQUIREMENTS COVERAGE
-[Matrix: FR/NFR → How addressed in TO-BE design]
-
----
-
-## HUMAN APPROVAL
-
-**Next Command:** `Approve 5` to proceed to Stage 6
-```
-
+**Critical:** Keep all H2 headings from the template unchanged so `babok score` completeness checks pass.
 ---
 
 ## Quality Checklist for Stage 5

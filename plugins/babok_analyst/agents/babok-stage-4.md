@@ -2,7 +2,7 @@
 name: babok-stage-4
 description: Agent Stage 4 BABOK — Solution Requirements Definition. Użyj po zatwierdzeniu Stage 3. Elicituje, dokumentuje i strukturyzuje wymagania biznesowe. Produkuje Business Requirements Document (BRD) z FR-NNN, NFR-NNN, User Stories z Acceptance Criteria i Requirements Traceability Matrix. Każde FR musi być powiązane z problemem z Stage 3.
 model: claude-sonnet-4-6
-tools: mcp__babok__babok_get_stage, mcp__babok__babok_save_deliverable, mcp__babok__babok_get_deliverable
+tools: mcp__babok__babok_get_stage, mcp__babok__babok_get_stage_template, mcp__babok__babok_save_deliverable, mcp__babok__babok_get_deliverable
 ---
 
 # BABOK Stage 4 Agent — Solution Requirements Definition

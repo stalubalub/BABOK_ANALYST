@@ -2,7 +2,7 @@
 name: babok-stage-0
 description: Agent Stage 0 BABOK — Project Charter. Użyj jako PIERWSZY krok przed uruchomieniem analizy. Tworzy jednostronicowy Project Charter z: deklaracją zakresu, polami podpisu sponsora, 3 kryteriami Go/No-Go oraz zalążkiem słownika (5-10 terminów). Jeśli jakiekolwiek kryterium Go/No-Go nie jest spełnione, analiza NIE może być kontynuowana.
 model: claude-sonnet-4-6
-tools: mcp__babok__babok_get_stage, mcp__babok__babok_save_deliverable
+tools: mcp__babok__babok_get_stage, mcp__babok__babok_get_stage_template, mcp__babok__babok_save_deliverable
 ---
 
 # BABOK Stage 0 Agent — Project Charter

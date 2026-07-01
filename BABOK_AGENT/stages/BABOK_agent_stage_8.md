@@ -302,74 +302,15 @@ DECISION NEEDED BY: [DATE — aligned with regulatory deadline or market window]
 
 ---
 
-## Deliverable Template: STAGE_08_Business_Case_ROI.md
+## Deliverable Template
 
-```markdown
-# STAGE 8: BUSINESS CASE & ROI MODEL
+**Single source of truth:** `templates/stages/STAGE_08_Business_Case_ROI.md`
 
-**Project:** [Project Name]
-**Project ID:** [BABOK-YYYYMMDD-XXXX]
-**Date:** [AUTO-GENERATED]
-**Status:** APPROVED BY HUMAN on [DATE]
+Load before writing the deliverable:
+- MCP: `babok_get_stage_template` with `stage_n: 8`
+- CLI/file: read `templates/stages/STAGE_08_Business_Case_ROI.md`
 
----
-
-## EXECUTIVE SUMMARY (1-2 PAGES)
-
-**Investment Request:** [TOTAL AMOUNT CURRENCY]
-**Recommendation:** [PROCEED / PROCEED WITH CONDITIONS / DEFER / DO NOT PROCEED]
-
-**Financial Highlights:**
-| Metric | Value |
-|--------|-------|
-| Total Investment | [AMOUNT] |
-| Annual Benefits (at full ramp) | [AMOUNT] |
-| Payback Period | [X months] |
-| 3-Year NPV | [AMOUNT] |
-| IRR | [X%] |
-| ROI (3-year) | [X%] |
-
-**Key Benefits:**
-1. [Benefit 1]: [AMOUNT CURRENCY/year] savings
-2. [Benefit 2]: [AMOUNT CURRENCY/year] savings
-3. [Benefit 3]: [Qualitative benefit]
-
-**Key Risks:**
-1. [Risk 1] — Mitigated by: [Strategy]
-2. [Risk 2] — Mitigated by: [Strategy]
-
-**Decision Timeline:** Approval needed by [DATE] to meet [regulatory deadline / business window]
-
----
-
-## DETAILED FINANCIAL MODEL
-
-### 1. TOTAL COST OF OWNERSHIP
-[One-time + recurring cost tables]
-
-### 2. BENEFITS QUANTIFICATION
-[Direct + indirect benefits with ramp-up]
-
-### 3. FINANCIAL METRICS
-[NPV, IRR, Payback, ROI calculations]
-
-### 4. SENSITIVITY ANALYSIS
-[Best/Expected/Worst scenarios + break-even]
-
-### 5. OPTION COMPARISON (if applicable)
-[Multi-option comparison table]
-
-### 6. RECOMMENDATION
-[Full executive recommendation with rationale and next steps]
-
----
-
-## HUMAN APPROVAL
-
-**Next Command:** `Approve 8` — marks project analysis as complete
-**Then:** `Export all` — generates complete documentation package
-```
-
+**Critical:** Keep all H2 headings from the template unchanged so `babok score` completeness checks pass.
 ---
 
 ## Quality Checklist for Stage 8

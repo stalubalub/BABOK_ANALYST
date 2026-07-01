@@ -226,67 +226,15 @@ When requirements change after approval, follow this process:
 
 ---
 
-## Deliverable Template: STAGE_04_Solution_Requirements.md
+## Deliverable Template
 
-```markdown
-# STAGE 4: SOLUTION REQUIREMENTS DEFINITION
+**Single source of truth:** `templates/stages/STAGE_04_Solution_Requirements.md`
 
-**Project:** [Project Name]
-**Project ID:** [BABOK-YYYYMMDD-XXXX]
-**Date:** [AUTO-GENERATED]
-**Status:** APPROVED BY HUMAN on [DATE]
+Load before writing the deliverable:
+- MCP: `babok_get_stage_template` with `stage_n: 4`
+- CLI/file: read `templates/stages/STAGE_04_Solution_Requirements.md`
 
----
-
-## EXECUTIVE SUMMARY (1 PAGE)
-
-**Purpose of This Stage:**
-Define what the solution must do (functional) and how well it must perform (non-functional).
-
-**Key Findings:**
-1. [X] functional requirements defined ([Y] MUST, [Z] SHOULD, [W] COULD)
-2. [X] non-functional requirements defined (performance, security, availability, usability)
-3. [X] user stories written with acceptance criteria
-4. [X] requirements traced to root causes from Stage 3
-
-**MoSCoW Summary:**
-| Priority | Count | % of Total | Notes |
-|----------|-------|------------|-------|
-| MUST | [N] | [%] | Essential for go-live |
-| SHOULD | [N] | [%] | Phase 1+ delivery |
-| COULD | [N] | [%] | Future backlog |
-| WON'T | [N] | [%] | Out of scope |
-
-**Regulatory Requirements:**
-- [X] compliance requirements identified as MUST-HAVE
-- All traced to specific regulations from Stage 1
-
----
-
-## DETAILED ANALYSIS
-
-### 1. FUNCTIONAL REQUIREMENTS
-[Full FR list with FR-001 through FR-XXX]
-
-### 2. NON-FUNCTIONAL REQUIREMENTS
-[Full NFR list]
-
-### 3. USER STORIES BY EPIC
-[All user stories with acceptance criteria]
-
-### 4. REQUIREMENTS TRACEABILITY MATRIX
-[Full RTM]
-
-### 5. CHANGE CONTROL PROCESS
-[Process definition and empty CR log]
-
----
-
-## HUMAN APPROVAL
-
-**Next Command:** `Approve 4` to proceed to Stage 5
-```
-
+**Critical:** Keep all H2 headings from the template unchanged so `babok score` completeness checks pass.
 ---
 
 ## Quality Checklist for Stage 4

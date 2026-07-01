@@ -1,4 +1,6 @@
-# User Story Template
+> **Moved:** Use `modules/User_Story_Template.md` or `templates/stages/STAGE_04_Solution_Requirements.md`.
+
+# User Story Template (legacy path)
 
 **Epic:** [Epic Name]  
 **Feature:** [Feature Name]  

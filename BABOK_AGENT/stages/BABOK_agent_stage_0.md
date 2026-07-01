@@ -110,80 +110,15 @@ If you are unsure about exclusions, list anything you are certain should NOT be 
 
 ---
 
-## Deliverable Template: STAGE_00_Project_Charter.md
+## Deliverable Template
 
-```markdown
-# PROJECT CHARTER
+**Single source of truth:** `templates/stages/STAGE_00_Project_Charter.md`
 
-**Project ID:** [AUTO]
-**Date:** [AUTO]
-**Status:** DRAFT — Pending Sponsor Acknowledgement
+Load before writing the deliverable:
+- MCP: `babok_get_stage_template` with `stage_n: 0`
+- CLI/file: read `templates/stages/STAGE_00_Project_Charter.md`
 
----
-
-## 1. Business Trigger
-
-[Human answer to Question 1]
-
----
-
-## 2. Scope Statement
-
-**In scope:** [Human answer — in-scope part]
-
-**Out of scope:** [Human answer — out-of-scope part]
-
----
-
-## 3. Sponsor & Budget
-
-| Role | Name | Title |
-|------|------|-------|
-| Project Sponsor | [Name] | [Title] |
-| Budget Owner | [Name] | [Title] |
-
-**Budget status:** [Pre-approved / Pending business case / Not yet discussed]
-
----
-
-## 4. Go / No-Go Criteria
-
-All three must be true to proceed to Stage 1:
-
-| # | Criterion | Status |
-|---|-----------|--------|
-| 1 | A named sponsor with budget authority has acknowledged this charter | ⏳ Pending |
-| 2 | The scope boundary is agreed and documented above | ⏳ Pending |
-| 3 | No active organizational freeze or competing initiative blocks this project | ⏳ Pending |
-
----
-
-## 5. Glossary Seed
-
-Define 5–10 key terms used in the scope statement to prevent miscommunication:
-
-| Term | Definition |
-|------|------------|
-| [Term 1] | [Plain-language definition] |
-| [Term 2] | [Plain-language definition] |
-| ... | ... |
-
----
-
-## 6. Sponsor Acknowledgement
-
-By approving this charter (via `babok approve <id> 0`), the sponsor confirms:
-- The scope statement is accurate
-- They have budget authority or are named as the business case approver
-- The analysis may proceed to Stage 1
-
-**Sponsor:** _________________ **Date:** _________________
-
----
-
-**Next command:** `babok approve <id> 0` → proceed to Stage 1
-```
-
+**Critical:** Keep all H2 headings from the template unchanged so `babok score` completeness checks pass.
 ---
 
 ## Go / No-Go Check

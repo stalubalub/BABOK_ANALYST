@@ -27,7 +27,8 @@ function countMatches(text, re) {
  * Returns the text between that heading and the next same-or-higher-level heading.
  */
 function extractSection(content, keywords) {
-  const lines = content.split('\n');
+  const normalized = content.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+  const lines = normalized.split('\n');
   let inSection = false;
   let sectionLevel = 0;
   const collected = [];

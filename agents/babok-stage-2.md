@@ -2,7 +2,7 @@
 name: babok-stage-2
 description: Agent Stage 2 BABOK — Current State Analysis (AS-IS). Użyj po zatwierdzeniu Stage 1. Może być uruchomiony równolegle z wstępnym skanem ryzyka Stage 7. Analizuje obecne procesy biznesowe, identyfikuje bóle i nieefektywności. Produkuje AS-IS Process Model z metrykami bazowymi i inwentarzem systemów.
 model: claude-sonnet-4-6
-tools: mcp__babok__babok_get_stage, mcp__babok__babok_save_deliverable, mcp__babok__babok_get_deliverable
+tools: mcp__babok__babok_get_stage, mcp__babok__babok_get_stage_template, mcp__babok__babok_save_deliverable, mcp__babok__babok_get_deliverable
 ---
 
 # BABOK Stage 2 Agent — Current State Analysis (AS-IS)

@@ -23,6 +23,7 @@ import { runCoVe } from '../reasoning/verify.js';
 import { generateProcessDiagram } from '../reasoning/process-mapper.js';
 import { runPipeline } from '../orchestrator/engine.js';
 import { writeContext } from '../orchestrator/context-manager.js';
+import { loadTemplatesForStage } from '../templates.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -41,12 +42,7 @@ const STAGE_FILE_NAMES = {
   8: 'STAGE_08_Business_Case_ROI.md',
 };
 
-// Templates to inject per stage (format guidance for the AI)
-const STAGE_TEMPLATES = {
-  1: ['Stakeholder_Analysis_Template.md'],
-  4: ['User_Story_Template.md', 'BRD_Template.md'],
-  7: ['Risk_Register_Template.md'],
-};
+// Templates loaded via templates/manifest.json (see cli/src/templates.js)
 
 // ──────────────────────────────────────────────
 //  Helpers
@@ -147,25 +143,8 @@ async function fillContextInteractively(contextPath, context) {
   return context;
 }
 
-function loadTemplatesForStage(stageNum) {
-  const templateFiles = STAGE_TEMPLATES[stageNum] || [];
-  // Look for templates/ relative to cwd (workspace root) or 2 levels up from this file
-  const dirs = [
-    path.join(process.cwd(), 'templates'),
-    path.join(__dirname, '..', '..', '..', 'templates'),
-  ];
-
-  let result = '';
-  for (const f of templateFiles) {
-    for (const dir of dirs) {
-      const filePath = path.join(dir, f);
-      if (fs.existsSync(filePath)) {
-        result += `\n\n=== OUTPUT TEMPLATE: ${f} ===\n${fs.readFileSync(filePath, 'utf-8')}\n=== END TEMPLATE ===`;
-        break;
-      }
-    }
-  }
-  return result;
+function loadStageTemplateText(stageNum, projectContext = null) {
+  return loadTemplatesForStage(stageNum, { includeModules: true, projectContext }).text;
 }
 
 function createRunJournal(projectId, projectName, language, projectDir) {
@@ -240,7 +219,7 @@ function buildStageSystemPrompt(mainPrompt, stagePrompt, context, language, prev
       }\n=== END PREVIOUS OUTPUTS ===`
     : '';
 
-  const templates = loadTemplatesForStage(stageNum);
+  const templates = loadStageTemplateText(stageNum, context);
   const contextJson = JSON.stringify(context, null, 2);
 
   return `${mainPrompt}\n\n${stagePrompt}\n\n=== PROJECT CONTEXT ===\n${contextJson}\n=== END PROJECT CONTEXT ===${prevContext}${templates}\n\n=== AUTO-RUN MODE ===

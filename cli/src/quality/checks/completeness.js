@@ -53,7 +53,8 @@ export function checkCompleteness(content, requiredSections) {
     return { score: 100, issues: [] };
   }
 
-  const headings = extractHeadings(content);
+  const normalized = content.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+  const headings = extractHeadings(normalized);
   const issues = [];
   let found = 0;
 
