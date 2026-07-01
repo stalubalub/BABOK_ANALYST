@@ -16,7 +16,10 @@ import {
   approveStage,
   rejectStage,
   updateStageStatus,
+  submitForReview,
+  attestStage,
 } from '../../cli/src/journal.js';
+import { sha256Content } from '../../cli/src/two-key-gate.js';
 
 describe('CLI workflow: project lifecycle integration', () => {
   let tmpBase;
@@ -63,12 +66,33 @@ describe('CLI workflow: project lifecycle integration', () => {
     assert.ok(stage0.started_at, 'Stage 0 should have started_at');
   });
 
-  test('step 5: approve stage 0', () => {
+  test('step 5: two-key approve stage 0', () => {
+    const deliverable = '# Stage 0 Charter\n\nApproved workflow test.';
+    const deliverablePath = path.join(tmpBase, 'projects', PROJECT_ID, 'STAGE_00_Project_Charter.md');
+    fs.writeFileSync(deliverablePath, deliverable, 'utf-8');
+    const sha = sha256Content(deliverable);
+
+    submitForReview(PROJECT_ID, 0, sha);
+    attestStage(PROJECT_ID, 0, 'TestHuman', true, sha);
+
     const updated = approveStage(PROJECT_ID, 0);
     const stage0 = updated.stages.find(s => s.stage === 0);
     assert.equal(stage0.status, 'approved');
     assert.ok(stage0.approved_at, 'Should have approved_at');
-    assert.equal(stage0.approved_by, 'Human');
+    assert.equal(stage0.approved_by, 'TestHuman');
+    assert.equal(stage0.agent_submission.content_sha256, sha);
+    assert.equal(stage0.human_attestation.content_sha256, sha);
+  });
+
+  test('step 5b: approve without agent_submission throws', () => {
+    const id = 'BABOK-19700101-NOKEY';
+    createJournal(id, 'No Key Project', 'EN');
+    const deliverable = '# Stage 0\n\nNo submission.';
+    const deliverablePath = path.join(tmpBase, 'projects', id, 'STAGE_00_Project_Charter.md');
+    fs.writeFileSync(deliverablePath, deliverable, 'utf-8');
+    const sha = sha256Content(deliverable);
+    attestStage(id, 0, 'Human', true, sha);
+    assert.throws(() => approveStage(id, 0), /agent_submission/);
   });
 
   test('step 6: stage 1 is now in_progress after approving stage 0', () => {

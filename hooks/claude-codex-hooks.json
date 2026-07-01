@@ -26,6 +26,20 @@
           }
         ]
       }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "mcp__.*babok.*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/babok-gate.cjs\"",
+            "commandWindows": "if (Get-Command node -ErrorAction SilentlyContinue) { node \"$env:CLAUDE_PLUGIN_ROOT\\hooks\\babok-gate.cjs\" }",
+            "timeout": 30,
+            "statusMessage": "Two-Key Journal gate..."
+          }
+        ]
+      }
     ]
   }
 }

@@ -18,7 +18,8 @@ process.env.BABOK_PROJECTS_DIR = tmpDir;
 
 // Re-import (after env var is set, so getProjectsDir() resolves correctly)
 const { generateProjectId, listProjectIds, resolveProjectId, getProjectDir, getDeliverable, STAGES } = await import('../lib/project.js');
-const { createJournal, readJournal, approveStage, rejectStage } = await import('../lib/journal.js');
+const { createJournal, readJournal, approveStage, rejectStage, submitForReview, attestStage } = await import('../lib/journal.js');
+const { sha256Content } = await import('../lib/two-key-gate.js');
 
 // ── Test 1: generateProjectId format ─────────────────────────────────────
 {
@@ -59,8 +60,14 @@ const { createJournal, readJournal, approveStage, rejectStage } = await import('
   assert.equal(j.project_id, id);
   console.log(`✅ Test 5 passed: readJournal works`);
 
-  // ── Test 6: approveStage 0 advances to stage 1 ─────────────────────────
-  const j2 = approveStage(id, 0, 'Charter approved');
+  // ── Test 6: two-key approveStage 0 advances to stage 1 ─────────────────
+  const charterContent = '# Stage 0 Charter\n\nSmoke test charter.';
+  const charterPath = path.join(getProjectDir(id), 'STAGE_00_Project_Charter.md');
+  fs.writeFileSync(charterPath, charterContent, 'utf-8');
+  const charterSha = sha256Content(charterContent);
+  submitForReview(id, 0, charterSha);
+  attestStage(id, 0, 'SmokeHuman', true, charterSha);
+  const j2 = approveStage(id, 0, 'Charter approved', charterSha);
   assert.equal(j2.stages[0].status, 'approved');
   assert.equal(j2.stages[1].status, 'in_progress');
   assert.equal(j2.current_stage, 1);

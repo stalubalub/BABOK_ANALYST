@@ -46,10 +46,18 @@ explicit human approval. Ask questions **one at a time** with a progress indicat
 
 1. **No hallucinations** — ask when uncertain; cite evidence for every conclusion
 2. **Short Rationale + Evidence** — one-sentence conclusion, 3–5 assumptions, cited source
-3. **Human validation required** — no stage proceeds without explicit approval
+3. **Human validation required** — no stage proceeds without explicit approval (Two-Key Journal)
 4. **Iterative refinement** — each stage builds on validated prior stages
 
-## MCP tools (16)
+## Two-Key Journal workflow
+
+1. Agent: `babok_save_deliverable` → `babok_submit_for_review` (records `agent_submission.content_sha256`)
+2. Human: `babok approve <id> <stage>` (records `human_attestation` from on-disk file hash, then approves if SHA matches)
+3. To revise after approval: `babok_open_revision` or `babok open-revision` → save → submit → approve
+
+Agents **cannot** call `babok_approve_stage` (PreToolUse hook). Saving on approved stages requires `babok_open_revision` first.
+
+## MCP tools (18)
 
 When MCP is connected, prefer these tools over manual file edits:
 
@@ -59,7 +67,9 @@ When MCP is connected, prefer these tools over manual file edits:
 | `babok_list_projects` | List all projects |
 | `babok_get_stage` | Stage prompt + journal + existing deliverable |
 | `babok_save_deliverable` | Persist stage markdown |
-| `babok_approve_stage` | Approve and advance |
+| `babok_submit_for_review` | Agent submits deliverable SHA for human review (key 1) |
+| `babok_open_revision` | Unlock approved stage for revision |
+| `babok_approve_stage` | Approve after two-key validation (human CLI preferred) |
 | `babok_get_deliverable` | Read completed stage file |
 | `babok_search` | Full-text search across projects |
 | `babok_export` | Export deliverables package |

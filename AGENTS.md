@@ -8,8 +8,18 @@ approval gates between stages.
 
 - Ask questions **sequentially** (one at a time with progress indicator)
 - Every conclusion: **Short Rationale + Evidence** (conclusion, assumptions, cited source)
-- **No stage advances** without explicit human approval
+- **No stage advances** without explicit human approval (Two-Key Journal)
 - If uncertain, **ask** — do not hallucinate requirements or data
+
+## Two-Key Journal
+
+| Step | Who | Action |
+|------|-----|--------|
+| 1 | Agent | `babok_save_deliverable` then `babok_submit_for_review` |
+| 2 | Human | `babok approve <id> <stage>` (attestation + approval) |
+| 3 | Either | `babok_open_revision` before editing an approved stage |
+
+PreToolUse hook blocks agents from `babok_approve_stage` and from saving on locked approved stages.
 
 ## Project storage
 
@@ -22,8 +32,9 @@ Each project directory contains `PROJECT_JOURNAL_<id>.json` and `STAGE_0N_*.md` 
 
 ## MCP tools (when connected)
 
-Use `babok_new_project`, `babok_get_stage`, `babok_save_deliverable`, and
-`babok_approve_stage` for the core lifecycle. The server exposes **16 tools**
+Use `babok_new_project`, `babok_get_stage`, `babok_save_deliverable`,
+`babok_submit_for_review`, and human `babok approve` for the core lifecycle.
+The server exposes **18 tools**
 and **9 stage resources** (`babok://stages/0` … `babok://stages/8`).
 
 ## Stages

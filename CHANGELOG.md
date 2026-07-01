@@ -5,6 +5,18 @@ All notable changes to BABOK Analyst project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.8] - 2026-06-25
+
+### Added
+- **Two-Key Journal:** `agent_submission` + `human_attestation` with matching `content_sha256` required before `approved`.
+- **MCP tools:** `babok_submit_for_review` (agent key 1), `babok_open_revision` (unlock approved stage).
+- **CLI:** `babok open-revision <id> <stage>`; `babok approve` records human attestation from on-disk deliverable hash.
+- **PreToolUse hook:** `hooks/babok-gate.cjs` blocks agent `babok_approve_stage` and `babok_save_deliverable` on locked approved stages.
+
+### Changed
+- **`approveStage()`** atomically validates both SHA-256 keys and `spot_check_passed` before advancing pipeline.
+- **`babok_save_deliverable`** clears pending two-key state and refuses writes on approved stages unless `revision_open`.
+
 ## [2.2.7] - 2026-06-25
 
 ### Added

@@ -53,4 +53,27 @@ assert.equal(
   './hooks/claude-codex-hooks.json',
 );
 
+assert.ok(hooksJson.hooks.PreToolUse, 'PreToolUse hook configured for Two-Key gate');
+
+// babok-gate blocks agent approve_stage
+const gateEnv = {
+  ...codexEnv,
+  BABOK_PROJECTS_DIR: path.join(temp, 'projects'),
+};
+fs.mkdirSync(gateEnv.BABOK_PROJECTS_DIR, { recursive: true });
+const gateBlock = spawnSync(
+  process.execPath,
+  [path.join(root, 'hooks', 'babok-gate.cjs')],
+  {
+    env: gateEnv,
+    input: JSON.stringify({
+      tool_name: 'mcp__babok__babok_approve_stage',
+      tool_input: { project_id: 'X', stage_n: 0 },
+    }),
+    encoding: 'utf8',
+  },
+);
+assert.equal(gateBlock.status, 2, 'babok_approve_stage should be blocked');
+assert.match(gateBlock.stderr, /Two-Key Gate/);
+
 console.log('hooks checks passed');

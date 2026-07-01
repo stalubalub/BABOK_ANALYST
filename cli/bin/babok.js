@@ -6,7 +6,7 @@ import { listProjects } from '../src/commands/list.js';
 import { showStatus } from '../src/commands/status.js';
 import { loadProject } from '../src/commands/load.js';
 import { saveProject } from '../src/commands/save.js';
-import { approveCommand, rejectCommand } from '../src/commands/approve.js';
+import { approveCommand, rejectCommand, openRevisionCommand } from '../src/commands/approve.js';
 import { exportProject } from '../src/commands/export.js';
 import { chatCommand } from '../src/commands/chat.js';
 import { setLanguageCommand, showLanguage } from '../src/commands/language.js';
@@ -66,8 +66,17 @@ program
 program
   .command('approve <id> <stage>')
   .alias('APPROVE')
-  .description('Approve a stage (marks as approved, advances to next)')
+  .description('Human attestation + approve stage (Two-Key Journal key 2)')
+  .option('-n, --notes <notes>', 'Approval notes')
+  .option('--no-spot-check', 'Record attestation with spot_check_passed=false')
+  .option('--attestor <name>', 'Attestor name (default: OS username)')
   .action(approveCommand);
+
+program
+  .command('open-revision <id> <stage>')
+  .alias('OPEN-REVISION')
+  .description('Re-open an approved stage for revision (clears attestation)')
+  .action(openRevisionCommand);
 
 program
   .command('reject <id> <stage>')

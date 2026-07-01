@@ -25,7 +25,12 @@ import {
   writeJournal,
   approveStage,
   rejectStage,
+  submitForReview,
+  openRevision,
+  guardSaveDeliverable,
 } from './lib/journal.js';
+
+import { hashFileUtf8, sha256Content } from './lib/two-key-gate.js';
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  Helper: format journal summary for LLM consumption
@@ -291,7 +296,7 @@ server.tool(
 
 server.tool(
   'babok_approve_stage',
-  'Approve a completed stage and advance to the next one. Call this after the human confirms the stage deliverable is satisfactory.',
+  'Approve a stage after Two-Key Journal validation (agent_submission + human_attestation with matching content_sha256). Prefer `babok approve` CLI for human attestation; agents are blocked by PreToolUse hook.',
   {
     project_id: z.string().describe('Full or partial project ID'),
     stage_n: z.number().int().min(0).max(8).describe('Stage number to approve (0–8)'),
@@ -301,7 +306,11 @@ server.tool(
     const fullId = resolveProjectId(project_id);
     if (!fullId) throw new Error(`Project not found: ${project_id}`);
 
-    const journal = approveStage(fullId, stage_n, notes);
+    const filename = STAGE_FILE_NAMES[stage_n];
+    const filePath = path.join(getProjectDir(fullId), filename);
+    const deliverableSha = hashFileUtf8(filePath);
+
+    const journal = approveStage(fullId, stage_n, notes, deliverableSha);
     const nextStage = journal.stages.find(s => s.stage === stage_n + 1);
 
     const lines = [
@@ -324,6 +333,88 @@ server.tool(
     }
 
     return { content: [{ type: 'text', text: lines.join('\n') }] };
+  }
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+//  TOOL 4b: babok_submit_for_review
+// ─────────────────────────────────────────────────────────────────────────────
+
+server.tool(
+  'babok_submit_for_review',
+  'Agent submits deliverable snapshot for human review (Two-Key key 1). Call after babok_save_deliverable. Hashes on-disk file unless content_sha256 is provided.',
+  {
+    project_id: z.string().describe('Full or partial project ID'),
+    stage_n: z.number().int().min(0).max(8).describe('Stage number (0–8)'),
+    content_sha256: z.string().optional().describe('Optional SHA-256 hex of deliverable; defaults to hash of saved file'),
+  },
+  async ({ project_id, stage_n, content_sha256 }) => {
+    const fullId = resolveProjectId(project_id);
+    if (!fullId) throw new Error(`Project not found: ${project_id}`);
+
+    const filename = STAGE_FILE_NAMES[stage_n];
+    const filePath = path.join(getProjectDir(fullId), filename);
+    const sha = content_sha256 || hashFileUtf8(filePath);
+    if (!sha) {
+      throw new Error(
+        `No deliverable file for stage ${stage_n}. Call babok_save_deliverable first. Expected: ${filePath}`,
+      );
+    }
+
+    const journal = submitForReview(fullId, stage_n, sha);
+    const sub = journal.stages.find(s => s.stage === stage_n)?.agent_submission;
+
+    return {
+      content: [{
+        type: 'text',
+        text: [
+          '🔑 Agent submission recorded (Two-Key key 1)',
+          '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+          `  Project:   ${fullId}`,
+          `  Stage:     ${stage_n} — ${STAGES.find(s => s.stage === stage_n)?.name}`,
+          `  Review ID: ${sub?.review_id}`,
+          `  SHA-256:   ${sha}`,
+          '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+          '',
+          'Human must run: babok approve <id> ' + stage_n,
+        ].join('\n'),
+      }],
+    };
+  }
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+//  TOOL 4c: babok_open_revision
+// ─────────────────────────────────────────────────────────────────────────────
+
+server.tool(
+  'babok_open_revision',
+  'Open a new revision on an approved stage. Clears human attestation and unlocks babok_save_deliverable.',
+  {
+    project_id: z.string().describe('Full or partial project ID'),
+    stage_n: z.number().int().min(0).max(8).describe('Approved stage to revise (0–8)'),
+  },
+  async ({ project_id, stage_n }) => {
+    const fullId = resolveProjectId(project_id);
+    if (!fullId) throw new Error(`Project not found: ${project_id}`);
+
+    const journal = openRevision(fullId, stage_n);
+
+    return {
+      content: [{
+        type: 'text',
+        text: [
+          '🔓 Revision opened',
+          '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+          `  Project: ${fullId}`,
+          `  Stage:   ${stage_n} — ${STAGES.find(s => s.stage === stage_n)?.name}`,
+          `  Status:  IN PROGRESS (revision_open=true)`,
+          '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+          '',
+          'You may now call babok_save_deliverable, then babok_submit_for_review.',
+        ].join('\n'),
+      }],
+    };
   }
 );
 
@@ -469,20 +560,27 @@ server.tool(
     const fullId = resolveProjectId(project_id);
     if (!fullId) throw new Error(`Project not found: ${project_id}`);
 
+    const journal = readJournal(fullId);
+    const stage = journal.stages.find(s => s.stage === stage_n);
+    if (!stage) throw new Error(`Stage ${stage_n} not found`);
+    guardSaveDeliverable(stage);
+
     const filename = STAGE_FILE_NAMES[stage_n];
     const filePath = path.join(getProjectDir(fullId), filename);
 
     fs.writeFileSync(filePath, content, 'utf-8');
 
-    // Update journal to record deliverable file
-    const journal = readJournal(fullId);
-    const stage = journal.stages.find(s => s.stage === stage_n);
-    if (stage) {
-      stage.deliverable_file = filename;
-      if (stage.status === 'in_progress') stage.status = 'completed';
-      if (!stage.completed_at) stage.completed_at = new Date().toISOString();
-      writeJournal(fullId, journal);
+    stage.deliverable_file = filename;
+    if (stage.status === 'in_progress' || stage.revision_open) {
+      stage.status = 'completed';
+      stage.revision_open = false;
     }
+    if (!stage.completed_at) stage.completed_at = new Date().toISOString();
+    stage.agent_submission = null;
+    stage.human_attestation = null;
+    writeJournal(fullId, journal);
+
+    const sha = sha256Content(content);
 
     return {
       content: [{
@@ -492,8 +590,9 @@ server.tool(
           `  File: ${filePath}`,
           `  Stage: ${stage_n} — ${STAGES.find(s => s.stage === stage_n)?.name}`,
           `  Size: ${content.length} characters`,
+          `  SHA-256: ${sha}`,
           '',
-          'Stage status updated to COMPLETED. Call babok_approve_stage to advance.',
+          'Stage status: COMPLETED. Call babok_submit_for_review, then human runs: babok approve <id> ' + stage_n,
         ].join('\n'),
       }],
     };
