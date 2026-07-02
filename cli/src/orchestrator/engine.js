@@ -6,6 +6,7 @@ import { readContext, mergeStageOutput } from './context-manager.js';
 import { executeStage } from './stage-executor.js';
 import { runQualityLoop } from './quality-loop.js';
 import { getProjectDir } from '../project.js';
+import { createMessageBus } from './message-bus.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // cli/src/orchestrator → ../../../ = BABOK_ANALYST/
@@ -30,7 +31,7 @@ const DEEP_ANALYSIS_STAGES = new Set([3, 4, 6, 8]);
 
 /**
  * @param {string} projectId
- * @param {{ maxParallel?: number, dryRun?: boolean, stopAfterStage?: number, onProgress?: Function, llmClient?: object, deepAnalysisClient?: object }} options
+ * @param {{ maxParallel?: number, dryRun?: boolean, stopAfterStage?: number, onProgress?: Function, llmClient?: object, deepAnalysisClient?: object, taskRouter?: object }} options
  * @returns {Promise<{ projectId: string, stagesCompleted: string[], stagesFailed: string[], totalDurationMs: number, artefacts: Object }>}
  */
 export async function runPipeline(projectId, options = {}) {
@@ -40,6 +41,7 @@ export async function runPipeline(projectId, options = {}) {
     onProgress,
     llmClient: providedClient,
     deepAnalysisClient: providedDeepClient,
+    taskRouter,
   } = options;
 
   // Load orchestrator config (informational — pipeline shape is defined below)
@@ -55,8 +57,12 @@ export async function runPipeline(projectId, options = {}) {
   const llmClient = providedClient ?? { chat: async () => '[Mock response]' };
   // Falls back to llmClient when no separate deep-analysis client is configured
   const deepAnalysisClient = providedDeepClient ?? llmClient;
+  const messageBus = createMessageBus(projectId);
 
-  const emit = (event) => onProgress?.(event);
+  const emit = (event) => {
+    onProgress?.(event);
+    messageBus.publish(event.type, event);
+  };
 
   const startTime = Date.now();
   const stagesCompleted = [];
@@ -70,7 +76,9 @@ export async function runPipeline(projectId, options = {}) {
     const stageNumber = stageNumberFromKey(stageKey);
     const stageConfig = stageConfigs[`stage${stageNumber}`] ?? {};
     const isDeepStage = DEEP_ANALYSIS_STAGES.has(stageNumber);
-    const clientForStage = isDeepStage ? deepAnalysisClient : llmClient;
+    const clientForStage = taskRouter?.getStageClient
+      ? taskRouter.getStageClient(stageNumber)
+      : (isDeepStage ? deepAnalysisClient : llmClient);
 
     emit({ type: 'stage_started', stage: stageKey, mode: isDeepStage ? 'deep_analysis' : 'standard' });
 
@@ -82,6 +90,7 @@ export async function runPipeline(projectId, options = {}) {
       const qualityResult = await runQualityLoop(
         projectId, stageNumber, execResult.artefact, clientForStage, {
           dryRun,
+          taskRouter,
           onIteration: (e) => emit({
             type: e.escalated ? 'quality_escalate' : 'quality_iteration',
             ...e,

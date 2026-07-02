@@ -53,6 +53,7 @@ export async function runQualityLoop(projectId, stageNumber, artefact, llmClient
     maxIterations = 3,
     scoreThreshold = 75,
     onIteration,
+    taskRouter,
     dryRun = false,
   } = options;
 
@@ -71,13 +72,24 @@ export async function runQualityLoop(projectId, stageNumber, artefact, llmClient
 
   for (iteration = 1; iteration <= maxIterations; iteration++) {
     // Step a: score the artefact
-    const scoreMessage =
-      'Score this BABOK stage ' + stageNumber + ' artefact and return JSON: ' +
-      '{"overall":number,"completeness":number,"consistency":number,"quality":number,' +
-      '"improvements":["string"]}\n\nARTEFACT:\n' + currentArtefact;
+    let scoreObj = null;
+    if (taskRouter?.scoreQuality) {
+      try {
+        scoreObj = await taskRouter.scoreQuality({ stageNumber, artefact: currentArtefact });
+      } catch {
+        scoreObj = null;
+      }
+    }
 
-    const scoreResponse = await llmClient.chat(auditSystemPrompt, scoreMessage);
-    const scoreObj = parseScoreResponse(scoreResponse);
+    if (!scoreObj) {
+      const scoreMessage =
+        'Score this BABOK stage ' + stageNumber + ' artefact and return JSON: ' +
+        '{"overall":number,"completeness":number,"consistency":number,"quality":number,' +
+        '"improvements":["string"]}\n\nARTEFACT:\n' + currentArtefact;
+
+      const scoreResponse = await llmClient.chat(auditSystemPrompt, scoreMessage);
+      scoreObj = parseScoreResponse(scoreResponse);
+    }
     finalScore = scoreObj?.overall ?? 50;
 
     // Save iteration snapshot

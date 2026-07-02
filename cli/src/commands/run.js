@@ -24,6 +24,7 @@ import { generateProcessDiagram } from '../reasoning/process-mapper.js';
 import { runPipeline } from '../orchestrator/engine.js';
 import { writeContext } from '../orchestrator/context-manager.js';
 import { loadTemplatesForStage } from '../templates.js';
+import { createTaskRouter } from '../router.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -202,22 +203,32 @@ function updateJournalStage(journal, stageNum, projectDir, fileName) {
   fs.writeFileSync(journalPath, JSON.stringify(journal, null, 2), 'utf-8');
 }
 
-function buildStageSystemPrompt(mainPrompt, stagePrompt, context, language, previousOutputs, stageNum) {
+async function buildPreviousOutputsContext(previousOutputs, summarizeContext) {
+  if (Object.keys(previousOutputs).length === 0) return '';
+
+  const parts = [];
+  for (const [n, content] of Object.entries(previousOutputs)) {
+    const meta = STAGES.find(s => s.stage === parseInt(n));
+    let preview = content;
+    if (typeof summarizeContext === 'function') {
+      try {
+        preview = await summarizeContext(content);
+      } catch {
+        preview = content.length > 2000 ? content.substring(0, 2000) + '\n...[truncated]' : content;
+      }
+    } else {
+      preview = content.length > 2000 ? content.substring(0, 2000) + '\n...[truncated]' : content;
+    }
+    parts.push(`--- Stage ${n}: ${meta?.name} ---\n${preview}`);
+  }
+
+  return `\n\n=== PREVIOUS STAGE OUTPUTS (use as context) ===\n${parts.join('\n\n')}\n=== END PREVIOUS OUTPUTS ===`;
+}
+
+function buildStageSystemPrompt(mainPrompt, stagePrompt, context, language, prevContext, stageNum) {
   const langInstruction = language === 'PL'
     ? 'LANGUAGE REQUIREMENT: You MUST respond ENTIRELY in Polish language.'
     : 'LANGUAGE REQUIREMENT: Respond in English language.';
-
-  const prevContext = Object.keys(previousOutputs).length > 0
-    ? `\n\n=== PREVIOUS STAGE OUTPUTS (use as context) ===\n${
-        Object.entries(previousOutputs)
-          .map(([n, content]) => {
-            const meta = STAGES.find(s => s.stage === parseInt(n));
-            const preview = content.length > 2000 ? content.substring(0, 2000) + '\n...[truncated]' : content;
-            return `--- Stage ${n}: ${meta?.name} ---\n${preview}`;
-          })
-          .join('\n\n')
-      }\n=== END PREVIOUS OUTPUTS ===`
-    : '';
 
   const templates = loadStageTemplateText(stageNum, context);
   const contextJson = JSON.stringify(context, null, 2);
@@ -336,12 +347,22 @@ export async function runAnalysis(options) {
       deepAnalysisClient = createLlmClient(orchProvider, orchApiKey, options.deepModel);
       console.log(chalk.cyan('  Deep model: ') + chalk.bold(options.deepModel) + chalk.dim('  (stages 3,4,6,8)'));
     }
+
+    const taskRouter = createTaskRouter({
+      primaryProvider: orchProvider,
+      primaryApiKey: orchApiKey,
+      primaryModel: orchModel,
+      deepProvider: orchProvider,
+      deepApiKey: orchApiKey,
+      deepModel: options.deepModel || orchModel,
+    });
     console.log('');
 
     const result = await runPipeline(projectId, {
       dryRun: false,
       llmClient,
       deepAnalysisClient,
+      taskRouter,
       onProgress: (e) => {
         const modeTag = e.mode === 'deep_analysis' ? chalk.magenta(' [DEEP]') : '';
         console.log(chalk.cyan('  [orchestrator]'), e.type, e.stage || '', modeTag);
@@ -419,6 +440,15 @@ export async function runAnalysis(options) {
   const projectName = options.name || context.project_name || 'BABOK Analysis';
   const language = (options.lang || options.language || context.language || 'EN').toUpperCase();
   const outputDir = path.resolve(options.output || 'BABOK_Analysis');
+
+  const taskRouter = createTaskRouter({
+    primaryProvider: provider,
+    primaryApiKey: apiKey,
+    primaryModel: modelName,
+    deepProvider: provider,
+    deepApiKey: apiKey,
+    deepModel: options.deepModel || modelName,
+  });
 
   // Stage filtering
   let stagesToRun = [1, 2, 3, 4, 5, 6, 7, 8];
@@ -523,8 +553,9 @@ export async function runAnalysis(options) {
     };
 
     const runGeneration = async (extra) => {
+      const prevContext = await buildPreviousOutputsContext(previousOutputs, taskRouter.summarizeContext);
       const systemPrompt = buildStageSystemPrompt(
-        mainPrompt, stagePromptContent, context, language, previousOutputs, stageNum
+        mainPrompt, stagePromptContent, context, language, prevContext, stageNum
       );
       startChatSession(systemPrompt, []);
       process.stdout.write(chalk.dim('  Generating'));
@@ -618,7 +649,10 @@ export async function runAnalysis(options) {
         },
       };
       const { corrected, verificationReport } = await runCoVe(
-        stageNum, response, context, llmClient, { projectDir }
+        stageNum, response, context, llmClient, {
+          projectDir,
+          classifyVerdict: taskRouter.classifyVerdict,
+        }
       );
       console.log(chalk.blue(
         `  [verify] Stage ${stageNum}: ${verificationReport.questionsTotal} checks, ` +

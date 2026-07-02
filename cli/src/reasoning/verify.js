@@ -103,13 +103,34 @@ export async function runCoVe(stageNumber, analysis, context, llmClient, options
   // ── Step 2: Answer each question ──
   const questions = [];
   for (let i = 0; i < questionTexts.length; i++) {
+    const questionText = questionTexts[i];
+
+    if (typeof options.classifyVerdict === 'function') {
+      try {
+        const cls = await options.classifyVerdict({
+          context: contextStr,
+          analysis,
+          question: questionText,
+        });
+        const answer = String(cls?.label || 'UNCERTAIN').toUpperCase();
+        questions.push({
+          id: i + 1,
+          text: questionText,
+          answer: ['CONFIRMED', 'UNCERTAIN', 'REFUTED'].includes(answer) ? answer : 'UNCERTAIN',
+          justification: `Classifier verdict (score=${typeof cls?.score === 'number' ? cls.score.toFixed(3) : 'n/a'})`,
+        });
+        continue;
+      } catch {
+        // Fallback to legacy LLM question-answer prompt flow.
+      }
+    }
     const userMsg =
       `## Project Context (ground truth)\n\`\`\`json\n${contextStr}\n\`\`\`\n\n` +
       `## Stage ${stageNumber} Analysis\n${analysis}\n\n` +
-      `## Verification Question\n${questionTexts[i]}`;
+      `## Verification Question\n${questionText}`;
 
     const answerRaw = await llmClient.chat(answerPrompt, userMsg);
-    questions.push(parseAnswer(answerRaw, questionTexts[i], i + 1));
+    questions.push(parseAnswer(answerRaw, questionText, i + 1));
   }
 
   // ── Step 3: Correction pass if needed ──

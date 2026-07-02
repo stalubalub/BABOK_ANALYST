@@ -23,11 +23,20 @@ export async function executeStage(stageKey, stageConfig, context, llmClient, op
   }
 
   const systemPrompt = 'You are a BABOK analyst. Produce stage deliverable for: ' + stageKey;
-  // Build a context summary: truncate the raw string to avoid cutting mid-structure
+  // Build a context summary: prefer router-provided summarization over raw truncation.
   const contextStr = JSON.stringify(context, null, 2);
-  const contextSummary = contextStr.length > 2000
-    ? contextStr.substring(0, 1950) + '\n... [context truncated]'
-    : contextStr;
+  let contextSummary = contextStr;
+  if (contextStr.length > 2000) {
+    if (typeof llmClient?.summarizeContext === 'function') {
+      try {
+        contextSummary = await llmClient.summarizeContext(contextStr);
+      } catch {
+        contextSummary = contextStr.substring(0, 1950) + '\n... [context truncated]';
+      }
+    } else {
+      contextSummary = contextStr.substring(0, 1950) + '\n... [context truncated]';
+    }
+  }
 
   const startMs = Date.now();
   const artefact = await llmClient.chat(systemPrompt, contextSummary);
