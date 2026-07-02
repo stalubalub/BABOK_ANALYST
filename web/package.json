@@ -29,7 +29,7 @@
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "autoprefixer": "^10.5.2",
-    "eslint": "^8.57.0",
+    "eslint": "^10.6.0",
     "eslint-config-next": "^16.2.10",
     "postcss": "^8.5.16",
     "shadcn-ui": "^0.9.5",
