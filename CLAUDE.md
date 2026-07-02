@@ -52,12 +52,17 @@ npm run build
 npm run lint      # ESLint
 ```
 
-### Quality / Validation commands (CLI)
+### CLI commands (once linked, see full list in `README.md`)
 ```bash
+babok new [--name "Name"]         # create a project
+babok chat <id>                   # interactive AI chat for the current stage
+babok run [--context file.json]   # autonomous pipeline through all 8 stages (--auto, --diagram)
 babok score <id> <stage|all>      # quality scoring (3 dimensions)
 babok validate <id>               # cross-stage consistency (exits 1 on errors)
 babok ingest <file>               # ingest PDF/DOCX/XLSX/CSV/TXT/MD
 babok approve <id> <stage>        # human attestation — the only way to approve a stage
+babok diff <id> [id2] [--stage N] # stage history, or LCS diff between two projects
+babok make docx|pdf|all <id>      # generate documents from stage files
 ```
 
 ---
@@ -96,6 +101,20 @@ Each stage maps to a prompt file in `BABOK_AGENT/stages/BABOK_agent_stage_N.md` 
 | 7 | Risk Register |
 | 8 | Business Case & ROI |
 
+### Autonomous pipeline (`babok run`)
+`cli/src/commands/run.js` drives the full Stage 1→8 pipeline without per-stage manual chat, built on `cli/src/orchestrator/`:
+- `engine.js` — sequences stages per `agent_config.json`'s `orchestrator.pipeline`, running Stage 2 and Stage 7's initial risk scan in parallel via `parallel-runner.js`
+- `quality-loop.js` — after each stage, scores the deliverable and re-prompts up to 3 iterations before escalating to the human (mirrors the Two-Key gate — never auto-approves)
+- `context-manager.js` — reads/writes the shared `my_project_context.json` state across stages
+
+Two reasoning techniques from `cli/src/reasoning/` are layered on top: `debate.js` (Analyst → Critic → Synthesiser pass, stages 3/4/6/8 only) and `verify.js` (Chain-of-Verification: generate check questions, answer CONFIRMED/UNCERTAIN/REFUTED, correct if needed — writes `STAGE_NN_verification.json`). `process-mapper.js` generates Mermaid diagrams for `--diagram`.
+
+Full design/roadmap (partly aspirational): `docs/L2_L3_ARCHITECTURE.md`.
+
+### Templates & knowledge base
+- `templates/` — stage-first deliverable skeletons (`templates/stages/STAGE_0N_*.md`) plus reusable `modules/` (RTM, DPIA, User Story) and `industry/` supplements, wired via `manifest.json` and injected by `cli/src/templates.js` (CLI) or the `babok_get_stage_template` MCP tool (agents must call this before `babok_save_deliverable` to preserve required H2 headings).
+- `knowledge/` — static industry/regulation/benchmark/anti-pattern JSON reference data (manufacturing, distribution, services; GDPR, ISO 27001, KSeF, XRechnung), loaded via `cli/src/lib/knowledge-loader.js` and injected into prompts.
+
 ### Key source files
 
 | File | Role |
@@ -107,6 +126,7 @@ Each stage maps to a prompt file in `BABOK_AGENT/stages/BABOK_agent_stage_N.md` 
 | `cli/src/lock.js` | File locking for concurrent team access |
 | `cli/src/quality/scorer.js` | Quality scoring: Completeness 40%, SMART 30%, Consistency 30% |
 | `cli/src/validation/cross-stage-validator.js` | Runs all rules in `cli/src/validation/rules/` against a project |
+| `cli/src/orchestrator/engine.js` | `babok run` pipeline sequencing, parallel groups, quality-loop invocation |
 | `babok-mcp/src/server.js` | MCP server: 19 tools + 9 stage resources (single ~1800-line file) |
 | `hooks/babok-gate.cjs` | PreToolUse: Two-Key Journal enforcement + `.stage_N.lock` check on `babok_save_deliverable` |
 | `hooks/babok-quality-gate.cjs` | PostToolUse/`postToolUse` on `babok_submit_for_review`: runs `scorer.js` + `cross-stage-validator.js`, feeds issues back as `additionalContext` (never blocks). Wired for Claude Code, Codex, and Copilot CLI — Copilot uses a flat `{ additionalContext }` payload and `toolName`/`toolArgs` field names instead of the nested `hookSpecificOutput` shape; the hook detects the host via `isCopilot` from `babok-runtime.cjs` |
