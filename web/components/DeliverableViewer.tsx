@@ -2,8 +2,34 @@
 
 import ReactMarkdown from 'react-markdown';
 import type { Components } from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { FileText } from 'lucide-react';
 import { MermaidDiagram } from './MermaidDiagram';
+
+function normalizeCollapsedTables(content: string): string {
+  const lines = content.split('\n');
+
+  return lines
+    .map((line) => {
+      const trimmed = line.trim();
+      if (!trimmed.startsWith('|') || !trimmed.includes(' | |')) {
+        return line;
+      }
+
+      const isLikelyTableLine = /\|\s*[-:]{3,}[-|:\s]*\|/.test(trimmed);
+      if (!isLikelyTableLine && (line.match(/\|/g)?.length ?? 0) < 8) {
+        return line;
+      }
+
+      const rows = line
+        .split(/\s\|\s(?=\|)/g)
+        .map((row) => row.trim())
+        .filter(Boolean);
+
+      return rows.length > 1 ? rows.join('\n') : line;
+    })
+    .join('\n');
+}
 
 const markdownComponents: Components = {
   h1: ({ children }) => <h1 className="mt-8 text-3xl font-semibold tracking-tight text-slate-950 dark:text-white first:mt-0">{children}</h1>,
@@ -51,20 +77,17 @@ const markdownComponents: Components = {
   },
   table: ({ children }) => (
     <div className="overflow-x-auto rounded-3xl border border-slate-200 dark:border-slate-800">
-      <table className="min-w-full border-collapse">{children}</table>
+      <table className="min-w-full table-fixed border-collapse">{children}</table>
     </div>
   ),
   thead: ({ children }) => <thead className="bg-slate-100 dark:bg-slate-800">{children}</thead>,
   th: ({ children }) => (
-    <th className="border-b border-slate-200 px-4 py-3 text-left text-sm font-semibold text-slate-900 dark:border-slate-700 dark:text-white">
+    <th className="w-44 border-b border-slate-200 px-4 py-3 text-left text-sm font-semibold text-slate-900 dark:border-slate-700 dark:text-white sm:w-auto">
       {children}
     </th>
   ),
-  td: ({ children }) => (
-    <td className="border-b border-slate-200 px-4 py-3 align-top text-sm text-slate-700 dark:border-slate-800 dark:text-slate-300">
-      {children}
-    </td>
-  ),
+  tbody: ({ children }) => <tbody className="[&_tr:nth-child(even)]:bg-slate-50/70 dark:[&_tr:nth-child(even)]:bg-slate-900/40">{children}</tbody>,
+  td: ({ children }) => <td className="break-words border-b border-slate-200 px-4 py-3 align-top text-sm text-slate-700 dark:border-slate-800 dark:text-slate-300">{children}</td>,
 };
 
 interface Props {
@@ -72,6 +95,8 @@ interface Props {
 }
 
 export function DeliverableViewer({ content }: Props) {
+  const normalizedContent = normalizeCollapsedTables(content);
+
   return (
     <section className="card-base overflow-hidden">
       <div className="flex items-center gap-3 border-b border-slate-200/80 px-6 py-5 dark:border-slate-800">
@@ -85,7 +110,9 @@ export function DeliverableViewer({ content }: Props) {
       </div>
 
       <div className="space-y-5 px-6 py-6 lg:px-8 lg:py-8">
-        <ReactMarkdown components={markdownComponents}>{content}</ReactMarkdown>
+        <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
+          {normalizedContent}
+        </ReactMarkdown>
       </div>
     </section>
   );
