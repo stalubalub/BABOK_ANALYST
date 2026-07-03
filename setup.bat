@@ -8,43 +8,41 @@ echo  ========================================================
 echo.
 
 :: --- 0. Odswiez PATH (fix dla Explorer z nieaktualnym PATH) ---
-powershell.exe -NoProfile -Command "[System.Environment]::GetEnvironmentVariable('PATH','Machine') + ';' + [System.Environment]::GetEnvironmentVariable('PATH','User')" > "%TEMP%\babokpath.tmp" 2>nul
-for /f "usebackq delims=" %%P in ("%TEMP%\babokpath.tmp") do set "PATH=%%P"
-del "%TEMP%\babokpath.tmp" >nul 2>&1
+for /f "tokens=*" %%P in ('powershell.exe -NoProfile -Command "[System.Environment]::GetEnvironmentVariable('PATH','Machine') + ';' + [System.Environment]::GetEnvironmentVariable('PATH','User')" 2^>nul') do set "PATH=%%P"
 
 :: --- 1. Sprawdz Node.js ---
 node --version >nul 2>&1
-if not errorlevel 1 goto :NODE_OK
-
-:: Szukaj Node.js w standardowych lokalizacjach
-if exist "%ProgramFiles%\nodejs\node.exe" (
-    set "PATH=%ProgramFiles%\nodejs;!PATH!"
-    goto :NODE_OK
+if errorlevel 1 (
+    :: Szukaj Node.js w standardowych lokalizacjach
+    if exist "%ProgramFiles%\nodejs\node.exe" (
+        set "PATH=%ProgramFiles%\nodejs;!PATH!"
+    ) else if exist "%ProgramFiles(x86)%\nodejs\node.exe" (
+        set "PATH=%ProgramFiles(x86)%\nodejs;!PATH!"
+    ) else if exist "%LOCALAPPDATA%\Programs\nodejs\node.exe" (
+        set "PATH=%LOCALAPPDATA%\Programs\nodejs;!PATH!"
+    ) else (
+        echo  [BLAD] Node.js nie jest zainstalowany.
+        echo.
+        echo  Pobierz i zainstaluj ze strony: https://nodejs.org/
+        echo  Zalecana wersja: LTS ^(np. 20.x lub nowsza^)
+        echo.
+        echo  Po instalacji uruchom ten skrypt ponownie.
+        goto :DONE
+    )
+    :: Ponownie sprawdz po dodaniu do PATH
+    node --version >nul 2>&1
+    if errorlevel 1 (
+        echo  [BLAD] Node.js wciaz niedostepny.
+        goto :DONE
+    )
 )
-if exist "%ProgramFiles(x86)%\nodejs\node.exe" (
-    set "PATH=%ProgramFiles(x86)%\nodejs;!PATH!"
-    goto :NODE_OK
-)
-if exist "%LOCALAPPDATA%\Programs\nodejs\node.exe" (
-    set "PATH=%LOCALAPPDATA%\Programs\nodejs;!PATH!"
-    goto :NODE_OK
-)
 
-echo  [BLAD] Node.js nie jest zainstalowany.
-echo.
-echo  Pobierz i zainstaluj ze strony: https://nodejs.org/
-echo  Zalecana wersja: LTS (np. 20.x lub nowsza)
-echo.
-echo  Po instalacji uruchom ten skrypt ponownie.
-goto :DONE
-
-:NODE_OK
 for /f "tokens=1" %%v in ('node --version') do set "NODE_VER=%%v"
 echo  [OK] Node.js !NODE_VER! znaleziony.
 
 :: --- 2. Sprawdz npm ---
-call npm --version >nul 2>&1
-if !errorlevel! neq 0 (
+npm --version >nul 2>&1
+if errorlevel 1 (
     echo  [BLAD] npm nie zostal znaleziony. Zainstaluj Node.js ponownie.
     goto :DONE
 )
@@ -54,7 +52,7 @@ echo  [OK] npm znaleziony.
 echo.
 echo  [INFO] Instalowanie zaleznosci CLI...
 pushd "%~dp0cli"
-call npm install
+npm install
 set "NPM_ERR=!errorlevel!"
 popd
 if !NPM_ERR! neq 0 (
@@ -69,7 +67,7 @@ if exist "%~dp0babok-mcp\package.json" (
     echo.
     echo  [INFO] Instalowanie zaleznosci MCP...
     pushd "%~dp0babok-mcp"
-    call npm install
+    npm install
     set "NPM_MCP_ERR=!errorlevel!"
     popd
     if !NPM_MCP_ERR! neq 0 (
@@ -83,7 +81,7 @@ if exist "%~dp0babok-mcp\package.json" (
 echo.
 echo  [INFO] Instalowanie komendy 'babok' globalnie...
 pushd "%~dp0cli"
-call npm install -g . 2>nul
+npm install -g . 2>nul
 set "NPM_G_ERR=!errorlevel!"
 popd
 if !NPM_G_ERR! neq 0 (
