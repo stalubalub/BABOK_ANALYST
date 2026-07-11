@@ -304,7 +304,6 @@ This is a CONSULTING / PROCESS IMPROVEMENT / THEORY OF CONSTRAINTS project, NOT 
 
   return mainPrompt + '\n\n' + stagePrompt + consultingModifier + '\n\n' + contextBlock;
 }
-}
 
 /**
  * Handle slash commands
