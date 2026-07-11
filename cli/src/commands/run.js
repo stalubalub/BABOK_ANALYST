@@ -148,18 +148,23 @@ function loadStageTemplateText(stageNum, projectContext = null) {
   return loadTemplatesForStage(stageNum, { includeModules: true, projectContext }).text;
 }
 
-function createRunJournal(projectId, projectName, language, projectDir) {
+function createRunJournal(projectId, projectName, language, projectDir, mode = 'standard') {
   const now = new Date().toISOString();
+  const activeStages = mode === 'light'
+    ? STAGES.filter(s => s.stage === 0 || s.stage === 8)
+    : STAGES;
+
   const journal = {
     project_id: projectId,
     project_name: projectName,
     language,
+    mode,
     created_at: now,
     last_updated: now,
-    current_stage: 1,
+    current_stage: activeStages[0]?.stage ?? 0,
     current_status: 'in_progress',
     run_mode: 'automated',
-    stages: STAGES.map((s, i) => ({
+    stages: activeStages.map((s, i) => ({
       stage: s.stage,
       name: s.name,
       status: i === 0 ? 'in_progress' : 'not_started',
@@ -189,13 +194,14 @@ function updateJournalStage(journal, stageNum, projectDir, fileName) {
     stage.approved_by = 'auto-run';
     stage.deliverable_file = fileName;
   }
-  const nextStage = journal.stages.find(s => s.stage === stageNum + 1);
+  const currentIdx = journal.stages.findIndex(s => s.stage === stageNum);
+  const nextStage = currentIdx !== -1 ? journal.stages[currentIdx + 1] : null;
   if (nextStage && nextStage.status === 'not_started') {
     nextStage.status = 'in_progress';
     nextStage.started_at = now;
-    journal.current_stage = stageNum + 1;
+    journal.current_stage = nextStage.stage;
   }
-  if (stageNum === 8) {
+  if (!nextStage) {
     journal.current_status = 'completed';
   }
   journal.last_updated = now;
@@ -225,15 +231,24 @@ async function buildPreviousOutputsContext(previousOutputs, summarizeContext) {
   return `\n\n=== PREVIOUS STAGE OUTPUTS (use as context) ===\n${parts.join('\n\n')}\n=== END PREVIOUS OUTPUTS ===`;
 }
 
-function buildStageSystemPrompt(mainPrompt, stagePrompt, context, language, prevContext, stageNum) {
+function buildStageSystemPrompt(mainPrompt, stagePrompt, context, language, prevContext, stageNum, mode = 'standard') {
   const langInstruction = language === 'PL'
     ? 'LANGUAGE REQUIREMENT: You MUST respond ENTIRELY in Polish language.'
     : 'LANGUAGE REQUIREMENT: Respond in English language.';
 
+  const consultingModifier = mode === 'consulting'
+    ? `\n\n=== SPECIAL PROJECT MODE: CONSULTING (NON-IT BUSINESS ANALYSIS) ===
+CRITICAL INSTRUCTION:
+This is a CONSULTING / PROCESS IMPROVEMENT / THEORY OF CONSTRAINTS project, NOT an IT project.
+1. DO NOT ask about software systems, ERP versions, database schemas, API integrations, or tech stacks.
+2. Focus on: business operations, workflow bottlenecks, organizational structure, KPIs (like Throughput, Inventory, Operating Expense), process constraints, and human behavior.
+3. Interpret all IT-focused instructions in the standard stage prompt as metaphors or equivalents for business processes. For instance, treat "system integration" as "process coordination between departments", and "software system" as "business unit/process".`
+    : '';
+
   const templates = loadStageTemplateText(stageNum, context);
   const contextJson = JSON.stringify(context, null, 2);
 
-  return `${mainPrompt}\n\n${stagePrompt}\n\n=== PROJECT CONTEXT ===\n${contextJson}\n=== END PROJECT CONTEXT ===${prevContext}${templates}\n\n=== AUTO-RUN MODE ===
+  return `${mainPrompt}\n\n${stagePrompt}${consultingModifier}\n\n=== PROJECT CONTEXT ===\n${contextJson}\n=== END PROJECT CONTEXT ===${prevContext}${templates}\n\n=== AUTO-RUN MODE ===
 This is AUTOMATED ANALYSIS MODE. You are running as part of an automated pipeline.
 CRITICAL RULES:
 1. DO NOT ask any questions. Generate the COMPLETE deliverable document immediately.
@@ -450,13 +465,15 @@ export async function runAnalysis(options) {
     deepModel: options.deepModel || modelName,
   });
 
+  const mode = options.mode || 'standard';
+
   // Stage filtering
-  let stagesToRun = [1, 2, 3, 4, 5, 6, 7, 8];
+  let stagesToRun = mode === 'light' ? [8] : [1, 2, 3, 4, 5, 6, 7, 8];
   if (options.stages) {
     stagesToRun = String(options.stages)
       .split(',')
       .map(s => parseInt(s.trim()))
-      .filter(n => n >= 1 && n <= 8)
+      .filter(n => n >= 0 && n <= 8)
       .sort((a, b) => a - b);
   }
 
@@ -465,7 +482,7 @@ export async function runAnalysis(options) {
   const projectDir = path.join(outputDir, projectId);
   fs.mkdirSync(projectDir, { recursive: true });
 
-  const journal = createRunJournal(projectId, projectName, language, projectDir);
+  const journal = createRunJournal(projectId, projectName, language, projectDir, mode);
 
   // ── 4. Print header ──
   console.log('');
@@ -555,7 +572,7 @@ export async function runAnalysis(options) {
     const runGeneration = async (extra) => {
       const prevContext = await buildPreviousOutputsContext(previousOutputs, taskRouter.summarizeContext);
       const systemPrompt = buildStageSystemPrompt(
-        mainPrompt, stagePromptContent, context, language, prevContext, stageNum
+        mainPrompt, stagePromptContent, context, language, prevContext, stageNum, mode
       );
       startChatSession(systemPrompt, []);
       process.stdout.write(chalk.dim('  Generating'));

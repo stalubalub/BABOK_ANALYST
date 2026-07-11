@@ -291,13 +291,19 @@ ${journal.assumptions.map(a => `  - ${a}`).join('\n') || '  (none yet)'}
 
 Open Questions:
 ${journal.open_questions.map(q => `  - ${q}`).join('\n') || '  (none yet)'}
-
-LANGUAGE INSTRUCTION: You MUST respond in ${journal.language === 'PL' ? 'POLISH' : 'ENGLISH'} language throughout this entire conversation.
-======================
-
 `;
 
-  return mainPrompt + '\n\n' + stagePrompt + '\n\n' + contextBlock;
+  const consultingModifier = journal.mode === 'consulting'
+    ? `\n\n=== SPECIAL PROJECT MODE: CONSULTING (NON-IT BUSINESS ANALYSIS) ===
+CRITICAL INSTRUCTION:
+This is a CONSULTING / PROCESS IMPROVEMENT / THEORY OF CONSTRAINTS project, NOT an IT project.
+1. DO NOT ask about software systems, ERP versions, database schemas, API integrations, or tech stacks.
+2. Focus on: business operations, workflow bottlenecks, organizational structure, KPIs (like Throughput, Inventory, Operating Expense), process constraints, and human behavior.
+3. Interpret all IT-focused instructions in the standard stage prompt as metaphors or equivalents for business processes. For instance, treat "system integration" as "process coordination between departments", and "software system" as "business unit/process".`
+    : '';
+
+  return mainPrompt + '\n\n' + stagePrompt + consultingModifier + '\n\n' + contextBlock;
+}
 }
 
 /**

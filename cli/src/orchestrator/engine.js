@@ -115,6 +115,21 @@ export async function runPipeline(projectId, options = {}) {
   };
 
   // ── Pipeline execution ───────────────────────────────────────────────────
+  const journalPath = path.join(getProjectDir(projectId), `PROJECT_JOURNAL_${projectId}.json`);
+  let mode = 'standard';
+  if (fs.existsSync(journalPath)) {
+    try {
+      const journal = JSON.parse(fs.readFileSync(journalPath, 'utf-8'));
+      mode = journal.mode || 'standard';
+    } catch {}
+  }
+
+  if (mode === 'light') {
+    await runStage('stage8');
+    const totalDurationMs = Date.now() - startTime;
+    emit({ type: 'pipeline_complete', stagesCompleted, totalDurationMs });
+    return { projectId, stagesCompleted, stagesFailed, totalDurationMs, artefacts };
+  }
 
   // 1. Stage 1 (mandatory first, sequential)
   await runStage('stage1');

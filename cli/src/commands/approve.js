@@ -52,7 +52,8 @@ export async function approveCommand(partialId, stageStr, options = {}) {
     keyValue('Approved at:', stage.approved_at.slice(0, 19).replace('T', ' '));
     console.log(chalk.dim(line()));
 
-    const next = journal.stages.find(s => s.stage === stageNumber + 1);
+    const currentIdx = journal.stages.findIndex(s => s.stage === stageNumber);
+    const next = currentIdx !== -1 ? journal.stages[currentIdx + 1] : null;
     if (next) {
       console.log('');
       console.log(chalk.yellow(`Next: Stage ${next.stage} - ${next.name}`));

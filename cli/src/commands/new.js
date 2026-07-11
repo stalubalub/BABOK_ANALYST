@@ -7,6 +7,7 @@ import { getCurrentLanguage, getText } from '../language.js';
 export async function newProject(options) {
   let projectName = options.name;
   const language = options.language || getCurrentLanguage();
+  const mode = options.mode || 'standard';
 
   if (!projectName) {
     const rl = createInterface({ input: process.stdin, output: process.stdout });
@@ -29,6 +30,6 @@ export async function newProject(options) {
 
   const projectId = generateProjectId();
   const projectDir = getProjectDir(projectId);
-  createJournal(projectId, projectName, language);
+  createJournal(projectId, projectName, language, mode);
   printProjectCreated(projectId, projectName, projectDir, language);
 }

@@ -8,6 +8,7 @@ import assert from 'node:assert/strict';
 import fs from 'fs';
 import path from 'path';
 import os from 'os';
+import crypto from 'crypto';
 
 // We need to intercept getProjectDir — instead, work with the real journal functions
 // but create a temporary "projects" folder in CWD-equivalent.
@@ -23,6 +24,8 @@ import {
   approveStage,
   rejectStage,
   updateStageStatus,
+  submitForReview,
+  attestStage,
 } from '../../cli/src/journal.js';
 import { getJournalPath, getProjectDir, STAGES } from '../../cli/src/project.js';
 
@@ -302,5 +305,53 @@ describe('createJournal (real function via temp CWD)', () => {
       /Journal not found/,
       'Should throw for missing journal'
     );
+  });
+});
+
+describe('journal modes (light mode and consulting)', () => {
+  let tmpBase;
+  let originalCwd;
+
+  before(() => {
+    tmpBase = fs.mkdtempSync(path.join(os.tmpdir(), 'babok-journal-modes-test-'));
+    originalCwd = process.cwd();
+    fs.mkdirSync(path.join(tmpBase, 'projects'), { recursive: true });
+    process.chdir(tmpBase);
+  });
+
+  after(() => {
+    process.chdir(originalCwd);
+    if (tmpBase) fs.rmSync(tmpBase, { recursive: true, force: true });
+  });
+
+  test('createJournal with light mode contains only stages 0 and 8', () => {
+    const id = 'BABOK-20240115-LIGHT';
+    createJournal(id, 'Test Light Project', 'EN', 'light');
+    const journal = readJournal(id);
+    assert.equal(journal.mode, 'light');
+    assert.equal(journal.stages.length, 2);
+    assert.equal(journal.stages[0].stage, 0);
+    assert.equal(journal.stages[1].stage, 8);
+  });
+
+  test('approveStage transitions directly from stage 0 to stage 8 in light mode', () => {
+    const id = 'BABOK-20240115-LIGHT';
+    const pDir = path.join(tmpBase, 'projects', id);
+    fs.mkdirSync(pDir, { recursive: true });
+    
+    const deliverable = '# Stage 0 Charter\n\nLight mode test.';
+    const deliverablePath = path.join(pDir, 'STAGE_00_Project_Charter.md');
+    fs.writeFileSync(deliverablePath, deliverable, 'utf-8');
+    
+    const computedSha = crypto.createHash('sha256').update(deliverable).digest('hex');
+
+    submitForReview(id, 0, computedSha);
+    attestStage(id, 0, 'TestHuman', true, computedSha);
+
+    const journal = approveStage(id, 0, 'Notes', computedSha);
+    assert.equal(journal.stages[0].status, 'approved');
+    assert.equal(journal.stages[1].stage, 8);
+    assert.equal(journal.stages[1].status, 'in_progress');
+    assert.equal(journal.current_stage, 8);
   });
 });

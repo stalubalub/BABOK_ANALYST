@@ -163,10 +163,11 @@ server.tool(
   {
     name: z.string().min(1).describe('Project name (e.g. "ERP Integration for Acme Corp")'),
     language: z.enum(['EN', 'PL']).default('EN').describe('Analysis language: EN (English) or PL (Polish)'),
+    mode: z.enum(['standard', 'light', 'consulting']).default('standard').describe('Project mode: standard, light (stages 0,8 only), or consulting (non-IT business analysis)'),
   },
-  async ({ name, language }) => {
+  async ({ name, language, mode }) => {
     const projectId = generateProjectId();
-    const journal = createJournal(projectId, name, language);
+    const journal = createJournal(projectId, name, language, mode);
 
     return {
       content: [{
@@ -177,13 +178,14 @@ server.tool(
           `  Project ID:   ${projectId}`,
           `  Project Name: ${journal.project_name}`,
           `  Language:     ${language}`,
+          `  Mode:         ${mode}`,
           `  Created:      ${journal.created_at}`,
           `  Directory:    ${getProjectDir(projectId)}`,
           '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
           '',
-          `Current stage: Stage 0 — Project Charter (IN PROGRESS)`,
+          `Current stage: Stage ${journal.current_stage} — ${STAGES.find(s => s.stage === journal.current_stage)?.name} (IN PROGRESS)`,
           '',
-          'Next step: Call babok_get_stage with stage_n=0 to get the Stage 0 instructions,',
+          `Next step: Call babok_get_stage with stage_n=${journal.current_stage} to get stage instructions,`,
           'then work through the questions with the human before approving.',
           '',
           `Use project_id="${projectId}" for all subsequent tool calls.`,
@@ -272,7 +274,16 @@ server.tool(
     if (prompt) {
       sections.push('');
       sections.push('## Stage Instructions (BABOK Agent Prompt)');
-      sections.push(prompt);
+      let finalPrompt = prompt;
+      if (journal.mode === 'consulting') {
+        finalPrompt += `\n\n=== SPECIAL PROJECT MODE: CONSULTING (NON-IT BUSINESS ANALYSIS) ===
+CRITICAL INSTRUCTION:
+This is a CONSULTING / PROCESS IMPROVEMENT / THEORY OF CONSTRAINTS project, NOT an IT project.
+1. DO NOT ask about software systems, ERP versions, database schemas, API integrations, or tech stacks.
+2. Focus on: business operations, workflow bottlenecks, organizational structure, KPIs (like Throughput, Inventory, Operating Expense), process constraints, and human behavior.
+3. Interpret all IT-focused instructions in the standard stage prompt as metaphors or equivalents for business processes. For instance, treat "system integration" as "process coordination between departments", and "software system" as "business unit/process".`;
+      }
+      sections.push(finalPrompt);
     } else {
       sections.push('');
       sections.push(`## Stage Instructions`);
@@ -373,7 +384,8 @@ server.tool(
     const deliverableSha = hashFileUtf8(filePath);
 
     const journal = approveStage(fullId, stage_n, notes, deliverableSha);
-    const nextStage = journal.stages.find(s => s.stage === stage_n + 1);
+    const currentIdx = journal.stages.findIndex(s => s.stage === stage_n);
+    const nextStage = currentIdx !== -1 ? journal.stages[currentIdx + 1] : null;
 
     const lines = [
       `✅ Stage ${stage_n} APPROVED`,

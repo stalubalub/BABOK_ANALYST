@@ -41,6 +41,7 @@ program
   .description('Create a new BABOK analysis project')
   .option('-n, --name <name>', 'Project name')
   .option('-l, --language <lang>', 'Project language (EN/PL)', getCurrentLanguage())
+  .option('--mode <mode>', 'Project mode (standard/light/consulting)', 'standard')
   .action(newProject);
 
 program
@@ -192,6 +193,7 @@ program
   .option('--deep-model <name>', 'Model for deep-analysis stages (3,4,6,8); defaults to --model')
   .option('-l, --lang <lang>', 'Language: EN or PL (overrides context file)')
   .option('-s, --stages <list>', 'Comma-separated stages to run, e.g. "1,2,3" (default: all)')
+  .option('--mode <mode>', 'Project mode (standard/light/consulting)', 'standard')
   .option('--auto', 'Skip interactive review — run all stages fully automatically')
   .option('--debate', 'Enable Analyst→Critic→Synthesiser debate for deep-analysis stages (3,4,6,8)')
   .option('--verify', 'Enable Chain-of-Verification (CoVe) fact-check pass on all stages')

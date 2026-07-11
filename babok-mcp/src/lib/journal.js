@@ -30,17 +30,22 @@ export function readJournalNormalized(projectId) {
   return journal;
 }
 
-export function createJournal(projectId, projectName, language = 'EN') {
+export function createJournal(projectId, projectName, language = 'EN', mode = 'standard') {
   const now = new Date().toISOString();
+  const activeStages = mode === 'light'
+    ? STAGES.filter(s => s.stage === 0 || s.stage === 8)
+    : STAGES;
+
   const journal = {
     project_id: projectId,
     project_name: projectName,
     language,
+    mode,
     created_at: now,
     last_updated: now,
-    current_stage: 0,
+    current_stage: activeStages[0]?.stage ?? 0,
     current_status: 'in_progress',
-    stages: STAGES.map((s, i) => ({
+    stages: activeStages.map((s, i) => ({
       stage: s.stage,
       name: s.name,
       status: i === 0 ? 'in_progress' : 'not_started',
@@ -189,11 +194,12 @@ export function approveStage(projectId, stageNumber, notes, deliverableSha256) {
   if (!stage.completed_at) stage.completed_at = now;
   if (notes) stage.notes = notes;
 
-  const nextStage = journal.stages.find(s => s.stage === stageNumber + 1);
+  const currentIdx = journal.stages.findIndex(s => s.stage === stageNumber);
+  const nextStage = currentIdx !== -1 ? journal.stages[currentIdx + 1] : null;
   if (nextStage && nextStage.status === 'not_started') {
     nextStage.status = 'in_progress';
     nextStage.started_at = now;
-    journal.current_stage = stageNumber + 1;
+    journal.current_stage = nextStage.stage;
     journal.current_status = 'in_progress';
   } else if (!nextStage) {
     journal.current_status = 'completed';
