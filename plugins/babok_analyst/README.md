@@ -7,16 +7,17 @@ An AI agent for professional business analysis compliant with **BABOK v3** (Inte
 
 **Current version:** 2.2.8 | **Plugin install:** Claude Code, Codex, Copilot CLI
 
-## What is BABOK Analyst?
-
-BABOK Analyst is a set of system prompts for AI models (Claude, ChatGPT, other LLMs) that transforms them into business analysis experts. The agent:
+BABOK Analyst is a set of system prompts and toolchain integrations for AI models (Claude, Gemini, ChatGPT, other LLMs) that transforms them into business analysis experts. The agent:
 
 - Conducts a structured analysis process in **9 stages** (Stage 0 charter gate + Stages 1-8)
 - Uses **Short Rationale + Evidence** methodology (concise conclusions with cited evidence)
-- Requires **human approval** at each stage (human-in-the-loop)
+- Requires **human approval** at each stage (human-in-the-loop) via the **Two-Key Gate** (content-anchored SHA-256 human attestation and dual-key signatures in the project journal)
 - Generates complete **project documentation** in Markdown format
 - Manages **project lifecycle** with unique Project IDs, save/load, and persistent journal logs
-- Specializes in IT projects for **mid-market** companies (€10-100M revenue, 50-500 employees)
+- Supports multiple **Analysis Modes** tailored to the project profile:
+  - **Standard Mode**: Specializes in IT and software implementation projects for **mid-market** companies (€10-100M revenue, 50-500 employees).
+  - **Consulting Mode**: Specializes in process optimization, workflow bottlenecks, Theory of Constraints (TOC) analysis, and human-centric operational scaling without IT/software bias.
+  - **Light Mode**: A lightweight, fast-track workflow that focuses only on Stage 0 (Project Charter) and Stage 8 (Business Case & ROI), bypassing intermediate stages (1-7).
 
 ## Repository Structure
 
@@ -415,7 +416,7 @@ babok setup
 | Command | Description |
 |---------|-------------|
 | `babok setup` | **First-time setup wizard** — API keys, language, optional first project |
-| `babok new [--name "Name"]` | Create a new project with unique ID and timestamp |
+| `babok new [--name "Name"] [--mode <mode>]` | Create a new project (mode: standard/consulting/light, default: standard) |
 | `babok list` | List all projects with current status |
 | `babok status [id]` | Show detailed project status (all stages) |
 | `babok load <id>` | Load project context (generates text to paste into AI chat) |
@@ -428,7 +429,7 @@ babok setup
 | `babok diff <id1> <id2> [--stage N]` | Line diff between two projects' deliverables |
 | `babok export <id>` | Export project deliverables to output directory |
 | `babok chat <id>` | **Interactive AI chat** for current stage |
-| `babok run [--context file.json]` | **Automated 8-stage pipeline** (interactive or `--auto`) |
+| `babok run [--context file.json] [--mode <mode>]` | **Automated 8-stage pipeline** (interactive or `--auto`, mode: standard/consulting/light) |
 | `babok run --diagram` | Run pipeline with auto-generated Mermaid process diagrams (NEW v2.1.0) |
 | `babok ingest <file>` | **Ingest a document** (PDF/DOCX/XLSX/CSV/TXT/MD) into the project (NEW v2.1.0) |
 | `babok score <id> <stage\|all>` | **Quality score** for a stage or all stages (NEW v2.1.0) |
